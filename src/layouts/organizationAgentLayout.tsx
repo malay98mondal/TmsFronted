@@ -3,7 +3,7 @@ import { Box, Button, Grid, IconButton, Snackbar } from "@mui/material";
 
 import { Outlet } from "react-router-dom";
 import AgentContext from "../utils/agentContext";
-import Navbar from "../components/agent/Navbar";
+import Navbar from "../components/Task/Navbar";
 
 export default function OrganizationAgentLayout() {
   // const { darkMode, setDarkMode } = props;
@@ -59,7 +59,15 @@ export default function OrganizationAgentLayout() {
 
     // setCurrentTab(find?.id);
   }, []);
-
+  const navigationArray = [
+    {
+      id: 1,
+      name: "dashboard",
+      path: "/EmployTask",
+    },
+   
+   
+  ];
  
 
   return (
@@ -68,6 +76,7 @@ export default function OrganizationAgentLayout() {
         currentTab, 
         setCurrentTab,
         hideDurationNotifier,
+        navigationArray,
         setHiderDurationNotifier,
         notifyMessage,
         setNotifyMessage,

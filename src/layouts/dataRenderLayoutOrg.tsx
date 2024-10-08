@@ -74,7 +74,7 @@ export default function DataRenderLayoutOrg({ children }:any) {
 
 
     return (
-        <Grid ref={containerRef} item xs={12} md={12} lg={12} sx={{ overflow:"auto",background: darkMode ? "#010101" :"#fff", height:'50em'}}  >
+        <Grid ref={containerRef} item xs={12} md={12} lg={12} sx={{ overflow:"hidden" ,background: darkMode ? "#010101" :"#fff", height:'50em'}}  >
 
             <Grid container >
               <Grid item xs={0} md={0} lg={2} m={0} p={0}  sx={{display: { xs: "none", md:"none", lg: "block" }}} >
