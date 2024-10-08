@@ -45,13 +45,12 @@ const Navbar = () => {
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, paddingLeft: 2 }}>
         <Avatar sx={{ width: 35, height: 35 }} style={{ marginLeft: '0.5em' }} />
         <Typography variant="h5" color="white" fontSize={30}>
-          Credential
         </Typography>
 
         <Tooltip title="Go to Dashboard">
           <Link to='/super-admin-dashboard' style={{ alignItems: 'center', textDecoration: 'none' }}>
             <StyledButton size="small" isActive={isActive('/super-admin-dashboard')}>
-              Dashboard
+              
             </StyledButton>
           </Link>
         </Tooltip>
@@ -60,7 +59,6 @@ const Navbar = () => {
         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           <Link to="/super-admin-dashboard/hello" style={{ textDecoration: 'none' }}>
             <StyledButton size="small" isActive={isActive('/super-admin-dashboard/Admin-table')}>
-              WorkSpace
             </StyledButton>
           </Link>
         </Box>
@@ -73,7 +71,7 @@ const Navbar = () => {
           aria-label="menu"
           onClick={handleMenuOpen}
         >
-          <StyledButton size="small" isActive={false}>Menu</StyledButton>
+          <StyledButton size="small" isActive={false}></StyledButton>
         </IconButton>
 
 

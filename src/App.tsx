@@ -21,6 +21,7 @@ const Sidenav = React.lazy(() => import('./layouts/sideNav'));
 const Navbar = React.lazy(() => import('./layouts/navAdmin'));
 const Landing = React.lazy(() => import('./layouts/UserDashboards'));
 const ProjectMember = React.lazy(() => import('./components/Projets/ProjectMember'));
+const TaskCreation = React.lazy(() => import('./components/Task/TaskCreation'));
 
 function App() {
   const [darkMode, setDarkMode] = useState(false);
@@ -75,7 +76,7 @@ function App() {
         </Suspense>
       ),
       children: [
-        // Define any child routes for organization if needed
+        { path: 'task-table', element: <React.Suspense fallback={<Box display="flex" justifyContent="center" alignItems="center" height="100%" width="100%" padding='2em'><CircularProgress /></Box>}><TaskCreation /></React.Suspense> },
       ]
     },
     // Add more routes here as needed

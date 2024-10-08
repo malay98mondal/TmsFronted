@@ -6,6 +6,7 @@ import { Box, Button, Grid, IconButton, Snackbar } from "@mui/material";
 import { Outlet } from "react-router-dom";
 import SideNav from "./sideNav";
 import OrgContext from "../utils/orgContext";
+import Navbar from "./Navbar";
 import { useuserContext } from "../utils/userContext";
 
 export default function OrganizationLayout(props: any) {
@@ -147,6 +148,9 @@ export default function OrganizationLayout(props: any) {
     >
        
        <Box sx={{display:'flex',flexDirection:'column',width:'100%'}} >
+      <Navbar
+      
+      />
       <Grid container sx={{ minHeight: "90vh", background: "#fff",overflow:'auto' }}>
         <Outlet />
       </Grid>

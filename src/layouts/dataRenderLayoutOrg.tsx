@@ -11,8 +11,8 @@ export default function DataRenderLayoutOrg({ children }:any) {
     const navigationArray = [
         {
           id: 1,
-          name: "Users",
-          path: "/org-dashboard/users-table",
+          name: "Task",
+          path: "/org-dashboard/task-table",
           icon: (
             <Box
               sx={{
@@ -27,27 +27,7 @@ export default function DataRenderLayoutOrg({ children }:any) {
               <FaUsers />
             </Box>
           ),
-        },
-        {
-          id: 2,
-          name: "Agents",
-          path: "/org-dashboard/agents-table",
-          icon: (
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                height: '80px',
-                '&:hover svg': {
-                  color: 'white',
-                },
-              }}
-            >
-              <FaUsers />
-            </Box>
-          ),
-        }
+        }        
        
       ];
    
