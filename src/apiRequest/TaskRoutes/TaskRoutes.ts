@@ -34,3 +34,32 @@ export const getProjectEmployees = async (projectId: number, employeeId: number)
       throw error; // Rethrow the error for further handling
     }
   };
+
+
+  export const importTasks = async (empId: number, projectId: string, file: File) => {
+    const formData = new FormData();
+    formData.append('file', file);
+  
+    try {
+      const response = await axios.post(`${API_URL}/TaskRoutes/importTasks/${empId}/${projectId}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          // Include any other headers you need, e.g., Authorization
+        },
+      });
+      return response.data; // Return the response data
+    } catch (error: any) {
+      throw new Error(error.response?.data?.message || 'Error importing tasks'); // Handle errors
+    }
+  };
+
+
+  export const getTaskDetailsById = async (taskId: number) => {
+    try {
+      const response = await axios.get(`${API_URL}/TaskRoutes/task-details/${taskId}`);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching task details:", error);
+      throw error;
+    }
+  };

@@ -17,6 +17,7 @@ export const StyledTableRow = styled(TableRow)({
   '&:hover': {
     backgroundColor: '#e0e0e0',
   },
+  
 });
 
 export const SearchField = styled(TextField)({

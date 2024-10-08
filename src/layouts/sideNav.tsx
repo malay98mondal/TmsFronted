@@ -1,7 +1,7 @@
 import { Box, Divider, List, ListItem, ListItemText } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
-import { useuserContext } from "../utils/userContext";
+import { useAgentContext } from "../utils/agentContext";
 import React from "react";
 import { FaBookMedical } from "react-icons/fa6";
 import { Tooltip } from '@mui/material';
@@ -11,7 +11,7 @@ export default function SideNav(props: any) {
     const location = useLocation(); // Hook to get the current location
     const { darkMode, routes, showMiniNav, setShowMiniNav } = props;
     const { id } = useParams();
-    const { currentTab, setCurrentTab } = useuserContext();
+    const { currentTab, setCurrentTab } = useAgentContext();
 
     // Update currentTab based on the current URL path
     React.useEffect(() => {

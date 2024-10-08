@@ -22,7 +22,8 @@ const Navbar = React.lazy(() => import('./layouts/navAdmin'));
 const Landing = React.lazy(() => import('./layouts/UserDashboards'));
 const ProjectMember = React.lazy(() => import('./components/Projets/ProjectMember'));
 const TaskCreation = React.lazy(() => import('./components/Task/TaskCreation'));
-
+const EmployTaskTable = React.lazy(() => import('./components/EmployTask/EmployTaskTable'));
+const TaskDetails =React.lazy(()=>import('./components/Task/TaskDetails'));
 function App() {
   const [darkMode, setDarkMode] = useState(false);
 
@@ -77,8 +78,36 @@ function App() {
       ),
       children: [
         { path: 'task-table', element: <React.Suspense fallback={<Box display="flex" justifyContent="center" alignItems="center" height="100%" width="100%" padding='2em'><CircularProgress /></Box>}><TaskCreation /></React.Suspense> },
+        { path: 'task-table/task-details/:Task_details_Id', element: <React.Suspense fallback={<Box display="flex" justifyContent="center" alignItems="center" height="100%" width="100%" padding='2em'><CircularProgress /></Box>}><TaskDetails /></React.Suspense> },
+
       ]
     },
+    {
+      path: "employee-task",
+      element: (
+        <Suspense
+          fallback={
+            <Box
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              height="100%"
+              width="100%"
+              padding="2em"
+            >
+              <CircularProgress />
+            </Box>
+          }
+        >
+          <OrganizationAgentLayout/>
+        </Suspense>
+      ),
+      children: [
+        { path: 'EmployTask', element: <React.Suspense fallback={<Box display="flex" justifyContent="center" alignItems="center" height="100%" width="100%" padding='2em'><CircularProgress /></Box>}><EmployTaskTable /></React.Suspense> },
+      ]
+    },
+
+    
     // Add more routes here as needed
   ]);
 
