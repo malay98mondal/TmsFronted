@@ -63,3 +63,17 @@ export const getProjectEmployees = async (projectId: number, employeeId: number)
       throw error;
     }
   };
+
+
+
+  export const updateTask = async (taskId: number, status: string, remarks: string) => {
+    try {
+        const response = await axios.put(`${API_URL}/EmployeTaskRoute/UpdateTask/${taskId}`, {
+            Status: status,
+            Remarks: remarks
+        });
+        return response.data;
+    } catch (error: any) {
+        throw new Error(error.response?.data?.message || 'Error updating task');
+    }
+};
