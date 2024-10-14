@@ -3,16 +3,22 @@ import axios from 'axios';
 
 const API_URL = 'http://localhost:5000/api/v1';  // Replace with your actual API URL
 
-export const getTasksByEmployeeId = async (empId: number) => {
-    try {
-      const response = await axios.get(`${API_URL}/TaskRoutes/tasks/${empId}`, {
-      });
-      return response.data; // This will return { ProjectName, Tasks }
-    } catch (error) {
-      console.error('Error fetching tasks:', error);
-      throw error; // You can throw the error to handle it in your component
-    }
-  };
+export const getTasksByEmployeeId = async (empId: number, search: string, page: number, limit: number) => {
+  try {
+    const response = await axios.get(`${API_URL}/TaskRoutes/tasks/${empId}`, {
+      params: {
+        search,      // Include the search term
+        page,     // Include the current page
+        limit     // Include the number of tasks per page
+      }
+    });
+    return response.data; // This will return { ProjectName, Tasks }
+  } catch (error) {
+    console.error('Error fetching tasks:', error);
+    throw error; // You can throw the error to handle it in your component
+  }
+};
+
 
 
   export const createTask = async (taskData) => {
