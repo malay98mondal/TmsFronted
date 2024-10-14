@@ -31,7 +31,7 @@ export default function OrganizationAgentLayout() {
   const navigationArray = [
     {
       id: 1,
-      name: "Tasks",
+      name: "Pendingtask",
       path: "/employee-task/EmployTask",
     },
     {
