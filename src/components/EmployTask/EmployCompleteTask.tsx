@@ -8,7 +8,7 @@ import DataRenderLayoutAgent from '../../layouts/dataRenderLayoutAgent';
 import EditNoteIcon from '@mui/icons-material/EditNote';
 import { updateTask } from '../../apiRequest/TaskRoutes/TaskRoutes';
 
-function EmployTaskTable() {
+function CompletedTask() {
     const empId = 2;
     const [tasks, setTasks] = useState<any[]>([]);
     const [error, setError] = useState<string | null>(null);
@@ -144,4 +144,4 @@ function EmployTaskTable() {
     );
 }
 
-export default EmployTaskTable;
+export default CompletedTask;

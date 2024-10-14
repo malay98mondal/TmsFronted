@@ -24,7 +24,10 @@ const ProjectMember = React.lazy(() => import('./components/Projets/ProjectMembe
 const TaskCreation = React.lazy(() => import('./components/Task/TaskCreation'));
 const EmployTaskTable = React.lazy(() => import('./components/EmployTask/EmployTaskTable'));
 const TaskDetails =React.lazy(()=>import('./components/Task/TaskDetails'));
+const CompletedTask =React.lazy(()=>import('./components/EmployTask/EmployCompleteTask'));
+
 function App() {
+
   const [darkMode, setDarkMode] = useState(false);
 
   const router = createBrowserRouter([
@@ -104,6 +107,7 @@ function App() {
       ),
       children: [
         { path: 'EmployTask', element: <React.Suspense fallback={<Box display="flex" justifyContent="center" alignItems="center" height="100%" width="100%" padding='2em'><CircularProgress /></Box>}><EmployTaskTable /></React.Suspense> },
+        { path: 'CompletedTask', element: <React.Suspense fallback={<Box display="flex" justifyContent="center" alignItems="center" height="100%" width="100%" padding='2em'><CircularProgress /></Box>}><CompletedTask /></React.Suspense> },
       ]
     },
 

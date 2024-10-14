@@ -27,7 +27,7 @@ export default function SideNav(props: any) {
     const onchangeCurrentTab = (Itemid: any, path: any) => {
         localStorage.setItem('currentTab', JSON.stringify(Itemid));
         setCurrentTab(Itemid);
-        navigate(`${path}/${id}`);
+        navigate(`${path}`);
     };
 
     const RenderRoutes = (props: any) => {
