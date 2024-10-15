@@ -28,9 +28,8 @@ const AddMemberForm = (props: any) => {
                 const { Emp_Id, Role_Id } = values;
                 const response = await addOrUpdateProjectEmployee(Number(id), Number(Emp_Id), Number(Role_Id));
                 console.log('Success:', response);
-                onClose()
                 fetchEmployees()
-                // Handle success (e.g., show a success message or redirect)
+                onClose()
             } catch (error: any) {
                 console.error('Complete Error Object:', error);  // Log the complete error for debugging
 
