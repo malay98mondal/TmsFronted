@@ -62,3 +62,15 @@ export const addOrUpdateProjectEmployee = async (projectId: number, empId: numbe
         }
     }
 };
+
+
+
+export const addProject = async (projectData: { Project_Name: string; Status: string }) => {
+    try {
+      const response = await axios.post(`${BASE_URL}/GetProject/addProject`, projectData);
+      return response.data;
+    } catch (error) {
+      console.error("Error adding project:", error);
+      throw error;
+    }
+  };
