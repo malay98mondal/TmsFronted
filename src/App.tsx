@@ -15,7 +15,6 @@ import OrganizationProviderLayout from './layouts/organizationProviderLayout';
 import OrganizationAgentLayout from './layouts/organizationAgentLayout';
 import Hello from './components/Hello';
 import ProjectTable from './components/Projets/ProjectTable';
-// import ProjectMember from './components/Projets/ProjectMember';
 
 const Sidenav = React.lazy(() => import('./layouts/sideNav'));
 const Navbar = React.lazy(() => import('./layouts/navAdmin'));
@@ -25,6 +24,7 @@ const TaskCreation = React.lazy(() => import('./components/Task/TaskCreation'));
 const EmployTaskTable = React.lazy(() => import('./components/EmployTask/EmployTaskTable'));
 const TaskDetails =React.lazy(()=>import('./components/Task/TaskDetails'));
 const CompletedTask =React.lazy(()=>import('./components/EmployTask/EmployCompleteTask'));
+const EmployeeTable =React.lazy(()=>import('./components/Employee/EmployeTable'));
 
 function App() {
 
@@ -56,6 +56,7 @@ function App() {
         { path: '', element: <React.Suspense fallback={<Box display="flex" justifyContent="center" alignItems="center" height="100%" width="100%" padding='2em'><CircularProgress /></Box>}><Hello /></React.Suspense> },
         { path: 'project-table', element: <React.Suspense fallback={<Box display="flex" justifyContent="center" alignItems="center" height="100%" width="100%" padding='2em'><CircularProgress /></Box>}><ProjectTable /></React.Suspense> },
         { path: 'project-member/:id', element: <React.Suspense fallback={<Box display="flex" justifyContent="center" alignItems="center" height="100%" width="100%" padding='2em'><CircularProgress /></Box>}><ProjectMember /></React.Suspense> },
+        { path: 'Employee', element: <React.Suspense fallback={<Box display="flex" justifyContent="center" alignItems="center" height="100%" width="100%" padding='2em'><CircularProgress /></Box>}><EmployeeTable /></React.Suspense> },
 
       ]
     },

@@ -27,26 +27,26 @@ export default function DataRenderLayoutAdmin({ children }:any) {
           <FaUsers />
         </Box>
       ),
+    },
+    {
+      id: 2,
+      name: "Employee",
+      path: "/projects/Employee",
+      icon: (
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            '&:hover svg': {
+              color: 'white', 
+            },
+          }}
+        >
+          <FaUsers />
+        </Box>
+      ),
     }
-    // {
-    //   id: 2,
-    //   name: "Agents",
-    //   path: "/super-admin-dashboard/agents-table",
-    //   icon: (
-    //     <Box
-    //       sx={{
-    //         display: 'flex',
-    //         alignItems: 'center',
-    //         justifyContent: 'center',
-    //         '&:hover svg': {
-    //           color: 'white', 
-    //         },
-    //       }}
-    //     >
-    //       <FaUsers />
-    //     </Box>
-    //   ),
-    // },
     // {
     //   id: 3,
     //   name: "Users",

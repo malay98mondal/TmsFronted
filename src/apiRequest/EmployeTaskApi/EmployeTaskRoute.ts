@@ -53,3 +53,18 @@ export const getTasksByAssignedEmployeeCompleted = async (employeeId: number, pa
     throw error;
   }
 };
+
+
+
+export const postEmployee = async (employeeData: { Employee_name: string }) => {
+  try {
+    const response = await axios.post(`${API_URL}/Employee/post`, employeeData, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    return response.data;
+  } catch (error: any) {
+    throw new Error(error.response?.data?.message || 'Failed to create employee');
+  }
+};
