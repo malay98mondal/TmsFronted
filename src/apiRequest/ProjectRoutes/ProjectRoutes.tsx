@@ -65,7 +65,17 @@ export const addOrUpdateProjectEmployee = async (projectId: number, empId: numbe
 
 
 
-export const addProject = async (projectData: { Project_Name: string; Status: string }) => {
+export const addEmployee = async (employeeData: { Employee_name: string }) => {
+    try {
+      const response = await axios.post(`${BASE_URL}/Employee/post`, employeeData);
+      return response.data;
+    } catch (error: any) {
+      throw new Error(error.response?.data?.message || 'Failed to create employee');
+    }
+  };
+
+
+  export const addProject = async (projectData: { Project_Name: string; Status: string }) => {
     try {
       const response = await axios.post(`${BASE_URL}/GetProject/addProject`, projectData);
       return response.data;
