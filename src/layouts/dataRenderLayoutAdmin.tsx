@@ -111,18 +111,13 @@ export default function DataRenderLayoutAdmin({ children }:any) {
 
 
     return (
-        // <Grid ref={containerRef} item xs={12} md={12} lg={12} sx={{ overflow:"auto",background: darkMode ? "#010101" :"#fff", height: '50em'}}  >
-        //     <NavAdmin darkMode={darkMode} activeTab={activeTab} setActiveTab={setActiveTab} routes={navigationArray} showMiniNav={showMiniNav} setShowMiniNav={setShowMiniNav} />
-        //     {children}
-        // </Grid>
-
         <Grid container sx={{ height: "92vh", background: darkMode ? "#010101" : "#fff",overflow:"hidden" }} >
 
-              <Grid item xs={0} md={0} lg={2} m={0} p={0}  sx={{display: { xs: "none", lg: "block" }, height: 'auto', overflow: 'auto'}} >
+              <Grid item xs={0} md={0} lg={2.5} m={0} p={0}  sx={{display: { xs: "none", lg: "block" }, height: 'auto', overflow: 'auto'}} >
               <NavAdmin darkMode={darkMode} activeTab={activeTab} setActiveTab={setActiveTab} routes={navigationArray} showMiniNav={showMiniNav} setShowMiniNav={setShowMiniNav}  />
               </Grid>
 
-              <Grid item xs={12} md={12} lg={10} sx={{ ml: { lg: "auto" }, overflowY: "auto", height: "92vh" }} ref={containerRef}>
+              <Grid item xs={12} md={12} lg={9.5} sx={{ ml: { lg: "auto" }, overflowY: "auto", height: "92vh" }} ref={containerRef}>
                 {children}
             </Grid>          
         </Grid>

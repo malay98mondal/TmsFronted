@@ -1,5 +1,7 @@
 // /src/api/taskDetailsAPI.ts
 import axios from 'axios';
+import Cookies from 'js-cookie';
+import { memberCookiers } from '../ConfigData';
 
 // Base URL for your backend API
 const API_URL = 'http://localhost:5000/api/v1';  // Replace with your actual API URL
@@ -21,13 +23,23 @@ const API_URL = 'http://localhost:5000/api/v1';  // Replace with your actual API
 //   }
 // };
 
-export const getTasksByAssignedEmployee = async (empId, page, limit, search) => {
-  const url = `${API_URL}/EmployeTaskRoute/assigned/${empId}?page=${page}&limit=${limit}&search=${search}`;
+export const getTasksByAssignedEmployee = async ( page: number, limit: number, search: string) => {
+  const token = Cookies.get(memberCookiers);
+  const url = `${API_URL}/EmployeTaskRoute/assigned?page=${page}&limit=${limit}&search=${search}`;
   console.log(`Fetching tasks from: ${url}`); // Log the URL
-  const response = await axios.get(url);
-  return response.data;
-};
 
+  try {
+    const response = await axios.get(url, {
+      headers: {
+        Authorization: `Bearer ${token}`,  // Include the token in the Authorization header
+      },
+    });
+    return response.data;
+  } catch (error: any) {
+    console.error("Error fetching tasks:", error);
+    throw error.response?.data || 'Error fetching tasks';  // Handle error appropriately
+  }
+};
 
 
 // export const getTasksByAssignedEmployeeCompleted = async (empId, page, limit, search) => {
@@ -38,22 +50,25 @@ export const getTasksByAssignedEmployee = async (empId, page, limit, search) => 
 // };
 
 // Function to fetch tasks assigned to an employee by their ID
-export const getTasksByAssignedEmployeeCompleted = async (employeeId: number, page: number, limit: number, search: string) => {
+export const getTasksByAssignedEmployeeCompleted = async ( page: number, limit: number, search: string) => {
+  const token = Cookies.get(memberCookiers);
   try {
-    const response = await axios.get(`${API_URL}/EmployeTaskRoute/CompletedTask/${employeeId}`, {
+    const response = await axios.get(`${API_URL}/EmployeTaskRoute/CompletedTask`, {
       params: {
         page,   // Current page number
         limit,  // Number of items per page
         search, // Search term
       },
+      headers: {
+        Authorization: `Bearer ${token}`,  // Include the token in the Authorization header
+      },
     });
     return response.data; // Assuming your API returns { total, tasks }
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error fetching tasks:", error);
-    throw error;
+    throw error.response?.data || 'Error fetching completed tasks';  // Handle error appropriately
   }
 };
-
 
 
 export const postEmployee = async (employeeData: { Employee_name: string }) => {

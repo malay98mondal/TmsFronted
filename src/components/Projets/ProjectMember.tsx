@@ -8,12 +8,37 @@ import {
     CssBaseline,
     Toolbar,
     Button,
+    styled,
+    tableCellClasses,
 } from '@mui/material';
 import AddMemberDialog from './AddMemberDialog';
 import { MdEdit, MdDelete } from "react-icons/md";
 import { Link, useParams } from 'react-router-dom';
-import { AddUserButton, SearchField, StyledTableCell, StyledTableRow, StyledToolbar } from '../SuperAdmin/styles';
+import { AddUserButton, SearchField,  StyledToolbar } from '../SuperAdmin/styles';
 import {  getProjectEmployees } from '../../apiRequest/ProjectRoutes/ProjectRoutes';
+
+
+
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+    [`&.${tableCellClasses.head}`]: {
+        backgroundColor: '#f26729',
+      color:'white' ,
+    },
+    [`&.${tableCellClasses.body}`]: {
+      fontSize: 14,
+    },
+  }));
+  
+  const StyledTableRow = styled(TableRow)(({ theme }) => ({
+    '&:nth-of-type(odd)': {
+      backgroundColor: theme.palette.action.hover,
+    },
+    '&:last-child td, &:last-child th': {
+      border: 0,
+    },
+  }));
+
+  
 
 const ProjectMember: React.FC = () => {
    

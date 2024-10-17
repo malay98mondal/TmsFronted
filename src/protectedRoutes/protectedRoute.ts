@@ -1,7 +1,7 @@
 import Cookies from 'js-cookie'
 
 import { jwtDecode } from "jwt-decode";
-import { adminCookie,provider,userCookie,agent, org } from '../apiRequest/config';
+import { managerCookies, memberCookiers, teamLeadCookies } from '../apiRequest/ConfigData';
 
 
 
@@ -12,27 +12,20 @@ export const protectedRouter = () => {
     let cookie:string | undefined  = ""
     let role:string | undefined = ""
 
-    if (Cookies.get(adminCookie)) {
+    if (Cookies.get(managerCookies)) {
 
-        cookie = Cookies.get(adminCookie)
-        role = "admin"
+        cookie = Cookies.get(managerCookies)
+        role = "manager"
     }
-    else if (Cookies.get(org)) {
-        cookie = Cookies.get(org)
-        role = "org"
+    else if (Cookies.get(teamLeadCookies)) {
+        cookie = Cookies.get(teamLeadCookies)
+        role = "teamlead"
     }
-    else if (Cookies.get(userCookie)) {
-        cookie = Cookies.get(userCookie)
-        role = "user"
+    else if (Cookies.get(memberCookiers)) {
+        cookie = Cookies.get(memberCookiers)
+        role = "member"
     }
-    else if (Cookies.get(agent)) {
-        cookie = Cookies.get(agent)
-        role = "agent"
-    }
-    else if (Cookies.get(provider)) {
-        cookie = Cookies.get(provider)
-        role = "provider"
-    }
+   
 
   
 
@@ -44,22 +37,15 @@ export const protectedRouter = () => {
         if (decodedToken.exp < currentTime) {
           // Token has expired, clear user data
           
-          if (role == "admin") {
-              Cookies.remove(adminCookie)
+          if (role == "manager") {
+              Cookies.remove(managerCookies)
           }
-          else if (role == 'org') {
-            Cookies.remove(org)
+          else if (role == 'teamlead') {
+            Cookies.remove(teamLeadCookies)
             
         }
-        else if (role == "user") {
-            Cookies.remove(userCookie)
-        }
-        else if (role == "agent") {
-            Cookies.remove(agent)
-        }
-        else if (role == "provider") {
-            Cookies.remove(provider)
-            
+        else if (role == "member") {
+            Cookies.remove(memberCookiers)
         }
         
           return false

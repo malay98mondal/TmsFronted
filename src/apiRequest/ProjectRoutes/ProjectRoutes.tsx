@@ -1,40 +1,63 @@
 import axios from 'axios';
+import Cookies from 'js-cookie';
+import { managerCookies } from '../ConfigData';
 
 const API_URL = 'http://localhost:5000/api/v1/GetProject/projects';  // Replace with your actual API URL
 
 // Function to fetch projects from backend
 export const fetchProjects = async () => {
-  try {
-    const response = await axios.get(API_URL);
-    return response.data;  // Assuming the data contains `success` and `data`
-  } catch (error: any) {
-    console.error("Failed to fetch projects", error);
-    throw error;  // You can handle error logging or user feedback here
-  }
-};
-
+    const token = Cookies.get(managerCookies);
+    try {
+      const response = await axios.get(API_URL, {
+        headers: {
+          Authorization: `Bearer ${token}`,  // Include the token in the request header
+        },
+      });
+      return response.data;  // Assuming the data contains `success` and `data`
+    } catch (error: any) {
+      console.error("Failed to fetch projects", error);
+      throw new Error(error.response?.data?.message || 'Error fetching projects');
+    }
+  };
 
 
 
 const BASE_URL = 'http://localhost:5000/api/v1/';
 
 export const getProjectEmployees = async (projectId: number) => {
+    const token = Cookies.get(managerCookies);
     try {
-        const response = await axios.get(`${BASE_URL}/ProjectEmployee/${projectId}`);
-        return response.data;
-    } catch (error) {
-        throw new Error(error.response?.data?.message || 'Error fetching project employees');
+      const response = await axios.get(
+        `${BASE_URL}/ProjectEmployee/${projectId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,  // Include the token in the request header
+          },
+        }
+      );
+      return response.data;
+    } catch (error: any) {
+      throw new Error(error.response?.data?.message || 'Error fetching project employees');
     }
-};
+  };
 
-export const getEmployees = async () => {
+  export const getEmployees = async () => {
+    const token = Cookies.get(managerCookies);
+
     try {
-        const response = await axios.get(`${BASE_URL}/Employee/GetEmployee`);
-        return response.data;
-    } catch (error) {
-        throw new Error(error.response?.data?.message || 'Error fetching employees');
+      const response = await axios.get(
+        `${BASE_URL}/Employee/GetEmployee`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,  // Include the token in the Authorization header
+          },
+        }
+      );
+      return response.data;
+    } catch (error: any) {
+      throw new Error(error.response?.data?.message || 'Error fetching employees');
     }
-};
+  };
 
 
 
@@ -42,6 +65,7 @@ export const getEmployees = async () => {
 
 // Function to add or update project employee
 export const addOrUpdateProjectEmployee = async (projectId: number, empId: number, roleId: number) => {
+
     try {
         const response = await axios.post(`${BASE_URL}/ProjectEmployee/${projectId}`, {
             Emp_Id: empId,
@@ -65,22 +89,40 @@ export const addOrUpdateProjectEmployee = async (projectId: number, empId: numbe
 
 
 
-export const addEmployee = async (employeeData: { Employee_name: string }) => {
+export const addEmployee = async (employeeData: { Employee_name: string,email:string,password:string }) => {
+    const token = Cookies.get(managerCookies);
     try {
-      const response = await axios.post(`${BASE_URL}/Employee/post`, employeeData);
+      const response = await axios.post(
+        `${BASE_URL}/Employee/post`, 
+        employeeData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,  // Include the token in the Authorization header
+          },
+        }
+      );
       return response.data;
     } catch (error: any) {
       throw new Error(error.response?.data?.message || 'Failed to create employee');
     }
   };
 
-
   export const addProject = async (projectData: { Project_Name: string; Status: string }) => {
+    const token = Cookies.get(managerCookies);
+
     try {
-      const response = await axios.post(`${BASE_URL}/GetProject/addProject`, projectData);
+      const response = await axios.post(
+        `${BASE_URL}/GetProject/addProject`,
+        projectData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,  // Include the token in the request header
+          },
+        }
+      );
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error adding project:", error);
-      throw error;
+      throw new Error(error.response?.data?.message || 'Error adding project');
     }
   };

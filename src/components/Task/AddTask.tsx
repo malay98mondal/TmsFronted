@@ -8,13 +8,12 @@ interface Employee {
     Employee: any;
     Emp_Id: number;
     Name: string;
-    Employee_name: string; // Assuming the employee has a name field
+    Employee_name: string;
 }
 
 interface AddTaskFormProps {
     open: boolean;
     onClose: () => void;
-    empId: number;
     projectId: number;
 }
 
@@ -38,7 +37,7 @@ const validationSchema = Yup.object({
     Assigned_Emp_Id: Yup.number().required('Assigned employe is required'), // Assuming it's nullable, adjust as needed
 });
 
-const AddTaskForm: React.FC<AddTaskFormProps> = ({ open, onClose, empId, projectId }) => {
+const AddTaskForm: React.FC<AddTaskFormProps> = ({ open, onClose, projectId }) => {
     const formik = useFormik({
         initialValues: {
             Task_Details: '',
@@ -50,7 +49,6 @@ const AddTaskForm: React.FC<AddTaskFormProps> = ({ open, onClose, empId, project
         validationSchema: validationSchema,
         onSubmit: async (values) => {
             const newTask = {
-                Emp_Id: empId,
                 Project_Id: projectId,
                 Start_Time: values.Start_Time,
                 Task_Details: values.Task_Details,
@@ -76,7 +74,7 @@ const AddTaskForm: React.FC<AddTaskFormProps> = ({ open, onClose, empId, project
     useEffect(() => {
         const fetchEmployees = async () => {
             try {
-                const data = await getProjectEmployees(projectId, empId);
+                const data = await getProjectEmployees(projectId);
                 setEmployees(data);
                 console.log('Employ name', employees)
             } catch (err) {
