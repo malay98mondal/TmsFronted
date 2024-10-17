@@ -15,11 +15,10 @@ import { fetchProjects } from '../../apiRequest/ProjectRoutes/ProjectRoutes'; //
 import { addProject } from '../../apiRequest/ProjectRoutes/ProjectRoutes'; // Assuming this is your API function
 import DataRenderLayoutAdmin from '../../layouts/dataRenderLayoutAdmin';
 
-// Styled Table Cells and Rows
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
-    backgroundColor: theme.palette.common.black,
-    color: theme.palette.common.white,
+      backgroundColor: '#f26729',
+     color:'white' ,
   },
   [`&.${tableCellClasses.body}`]: {
     fontSize: 14,
@@ -34,6 +33,9 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
     border: 0,
   },
 }));
+
+
+
 
 function ProjectTable() {
   const [projects, setProjects] = useState<any[]>([]);
@@ -88,9 +90,6 @@ function ProjectTable() {
     } 
   };
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
 
   return (
     <DataRenderLayoutAdmin>

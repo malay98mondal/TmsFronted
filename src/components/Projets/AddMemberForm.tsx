@@ -119,8 +119,8 @@ const AddMemberForm = (props: any) => {
                             onBlur={formik.handleBlur}
                             error={formik.touched.Role_Id && Boolean(formik.errors.Role_Id)}
                         >
-                            <MenuItem value={1}>Team Lead</MenuItem> {/* Value for Team Lead */}
-                            <MenuItem value={2}>Member</MenuItem> {/* Value for Member */}
+                            <MenuItem value={2}>Team Lead</MenuItem> {/* Value for Team Lead */}
+                            <MenuItem value={3}>Member</MenuItem> {/* Value for Member */}
                         </Select>
                         <FormHelperText error={formik.touched.Role_Id && Boolean(formik.errors.Role_Id)}>
                             {formik.touched.Role_Id && formik.errors.Role_Id}

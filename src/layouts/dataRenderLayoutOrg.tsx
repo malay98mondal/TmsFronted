@@ -65,7 +65,7 @@ export default function DataRenderLayoutOrg({ children }: any) {
             {/* Sidebar container with sticky position */}
             <Grid
                 item
-                xs={0} md={0} lg={2} m={0} p={0}
+                xs={0} md={0} lg={2.5} m={0} p={0}
                 sx={{
                     display: { xs: "none", md: "none", lg: "block" },
                     position: "sticky", // Sticky positioning for sidebar
@@ -78,7 +78,7 @@ export default function DataRenderLayoutOrg({ children }: any) {
             </Grid>
 
             {/* Main content */}
-            <Grid item xs={12} md={12} lg={10} m={0} p={0}>
+            <Grid item xs={12} md={12} lg={9.5} m={0} p={0}>
                 {children}
             </Grid>
         </Grid>

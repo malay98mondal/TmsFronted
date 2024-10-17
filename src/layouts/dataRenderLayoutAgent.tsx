@@ -41,7 +41,7 @@ export default function DataRenderLayoutAgent({ children }: any) {
     };
 
     return (
-        <Grid container sx={{ height: "92vh", background: darkMode ? "#010101" : "#fff",overflow:"hidden" }}>
+        <Grid container sx={{ height: "100vh", background: darkMode ? "#010101" : "#fff",overflow:"hidden" }}>
             {/* Permanent SideNav for larger screens */}
             <Grid item xs={0} md={0} lg={2.5} sx={{ display: { xs: "none", lg: "block" }, height: "92vh", overflowY: "auto" }}>
                 <SideNav

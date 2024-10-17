@@ -13,9 +13,12 @@ import {
   Tooltip,
   Typography,
   TextField,
+  tableCellClasses,
+  TableCell,
+  styled,
 } from '@mui/material';
 import { Link } from 'react-router-dom';
-import { StyledTableCell, StyledTableRow, StyledToolbar } from '../SuperAdmin/styles';
+import {  StyledToolbar } from '../SuperAdmin/styles';
 import { MdDelete } from 'react-icons/md';
 import {  getTasksByEmployeeId } from '../../apiRequest/TaskRoutes/TaskRoutes';
 import AddTaskForm from '../../components/Task/AddTask';
@@ -23,8 +26,28 @@ import DataRenderLayoutOrg from '../../layouts/dataRenderLayoutOrg';
 import { importTasks } from '../../apiRequest/TaskRoutes/TaskRoutes'; 
 import VisibilityIcon from '@mui/icons-material/Visibility';
 
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+  [`&.${tableCellClasses.head}`]: {
+      backgroundColor: '#f26729',
+    color:'white' ,
+  },
+  [`&.${tableCellClasses.body}`]: {
+    fontSize: 14,
+  },
+}));
+
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
+  '&:nth-of-type(odd)': {
+    backgroundColor: theme.palette.action.hover,
+  },
+  '&:last-child td, &:last-child th': {
+    border: 0,
+  },
+}));
+
+
 function TaskCreation() {
-  const empId = 1; // Set employee ID
+  // const empId = 1; // Set employee ID
   const [tasks, setTasks] = useState<any[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [open, setOpen] = useState(false); // State to open/close dialog
@@ -42,7 +65,7 @@ function TaskCreation() {
   useEffect(() => {
     const fetchTasks = async () => {
       try {
-        const data = await getTasksByEmployeeId(empId, searchTerm, currentPage, tasksPerPage);
+        const data = await getTasksByEmployeeId( searchTerm, currentPage, tasksPerPage);
         setTasks(data.tasks);
         setTotalTasks(data.total);
         setProjectId(data.projectId);
@@ -52,7 +75,7 @@ function TaskCreation() {
       }
     };
     fetchTasks();
-  }, [empId, searchTerm, currentPage, tasksPerPage]); // Dependencies
+  }, [ searchTerm, currentPage, tasksPerPage]); // Dependencies
 
   // Function to handle opening the Add Task Form dialog
   const handleClickOpen = () => {
@@ -79,11 +102,10 @@ function TaskCreation() {
   const handleUpload = async () => {
     if (file) {
       try {
-        const response = await importTasks(empId, projectId, file);
+        const response = await importTasks(projectId, file);
         setMessage(response.message); // Handle success message
         setFile(null); // Reset file input
-        // Refresh tasks after import
-        await getTasksByEmployeeId(empId, searchTerm, currentPage, tasksPerPage);
+        await getTasksByEmployeeId( searchTerm, currentPage, tasksPerPage);
       } catch (error: any) {
         setMessage(error.message); // Handle error message
       }
@@ -107,9 +129,9 @@ function TaskCreation() {
     setCurrentPage(newPage);
   };
 
-  if (error) {
-    return <div>{error}</div>;
-  }
+  // if (error) {
+  //   return <div>{error}</div>;
+  // }
 
   return (
     <DataRenderLayoutOrg>
@@ -206,7 +228,7 @@ function TaskCreation() {
           </Box>
 
           {/* Add Task Form */}
-          <AddTaskForm open={open} onClose={handleClose} empId={empId} projectId={projectId} />
+          <AddTaskForm open={open} onClose={handleClose} projectId={projectId} />
         </Box>
       </Box>
     </DataRenderLayoutOrg>

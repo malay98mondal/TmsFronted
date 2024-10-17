@@ -30,10 +30,6 @@ const normalizeDate = (date: any) => {
 
 // Validation schema using Yup
 const validationSchema = Yup.object({
-  Task_Details: Yup.string().required('Task details are required'),
-  Start_Time: Yup.string().required('Start time is required'),
-  End_Date: Yup.string().required('End date is required'),
-  End_Time: Yup.string().required('End time is required'),
   Status: Yup.string().required('Status is required'),
   Remarks: Yup.string().test(
     'is-overdue',
@@ -71,7 +67,6 @@ const EditTaskForm: React.FC<EditTaskFormProps> = ({
             console.log('Submitted Values:', values); // Debugging statement for submitted values
             onSubmit(values);
             setSubmitting(false);
-            onClose();
           }}
         >
           {({ values, handleChange, handleBlur, errors, touched, isSubmitting }) => {

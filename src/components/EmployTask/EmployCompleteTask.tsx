@@ -5,8 +5,11 @@ import {
     CssBaseline,
     IconButton,
     Paper,
+    styled,
     Table,
     TableBody,
+    TableCell,
+    tableCellClasses,
     TableContainer,
     TableHead,
     TableRow,
@@ -15,15 +18,37 @@ import {
     Tooltip,
     Typography,
 } from '@mui/material';
-import { StyledTableCell, StyledTableRow, StyledToolbar } from '../SuperAdmin/styles';
+import { StyledToolbar } from '../SuperAdmin/styles';
 import { getTasksByAssignedEmployeeCompleted } from '../../apiRequest/EmployeTaskApi/EmployeTaskRoute';
 import EditTaskForm from '../../components/EmployTask/EditTaskForm';
 import DataRenderLayoutAgent from '../../layouts/dataRenderLayoutAgent';
 import EditNoteIcon from '@mui/icons-material/EditNote';
 import { updateTask } from '../../apiRequest/TaskRoutes/TaskRoutes';
 
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+    [`&.${tableCellClasses.head}`]: {
+        backgroundColor: '#f26729',
+      color:'white' ,
+    },
+    [`&.${tableCellClasses.body}`]: {
+      fontSize: 14,
+    },
+  }));
+  
+  const StyledTableRow = styled(TableRow)(({ theme }) => ({
+    '&:nth-of-type(odd)': {
+      backgroundColor: theme.palette.action.hover,
+    },
+    '&:last-child td, &:last-child th': {
+      border: 0,
+    },
+  }));
+  
+
+
+
+
 function EmployTaskTable() {
-    const empId = 2; // Assigned Employee ID
     const [tasks, setTasks] = useState<any[]>([]);
     const [error, setError] = useState<string | null>(null);
     const [openEdit, setOpenEdit] = useState(false); // State to open/close Edit Task dialog
@@ -36,17 +61,17 @@ function EmployTaskTable() {
     useEffect(() => {
         const fetchTasks = async () => {
             try {
-                const data = await getTasksByAssignedEmployeeCompleted(empId, page, limit, search);
-                console.log('API Response:', data); // Debugging log
+                const data = await getTasksByAssignedEmployeeCompleted( page, limit, search);
+                console.log('API Response:', data); 
                     setTasks(data.tasks);
-                    setTotalTasks(data.total);                     // If no tasks are found or no tasks array
+                    setTotalTasks(data.total);                     
             } catch (err) {
                 setError('Failed to fetch tasks.');
                 console.error('Fetch error:', err); // Log the error for debugging
             }
         };
         fetchTasks();
-    }, [empId, page, limit, search]);
+    }, [page, limit, search]);
 
     const handleClickOpenEdit = (task: any) => {
         setSelectedTask(task);
@@ -84,7 +109,7 @@ function EmployTaskTable() {
                     </StyledToolbar>
                     
                 </Box>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1em' }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                    
                 </Box>
                 <Box component="main" sx={{ flexGrow: 1, bgcolor: 'background.default', marginTop: '-4em', width: '100%' }}>

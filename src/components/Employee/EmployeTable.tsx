@@ -27,11 +27,10 @@ import { tableCellClasses } from '@mui/material/TableCell';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 
-// Styled Table Cells and Rows
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
-    backgroundColor: theme.palette.common.black,
-    color: theme.palette.common.white,
+      backgroundColor: '#f26729',
+    color:'white' ,
   },
   [`&.${tableCellClasses.body}`]: {
     fontSize: 14,
@@ -47,9 +46,11 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
+
 function EmployeeTable() {
   const [employees, setEmployees] = useState<any[]>([]);
   const [openDialog, setOpenDialog] = useState(false);
+  const [serverError, setServerError] = useState('');
 
   // Fetch employee data
   const getProjects = async () => {
@@ -68,46 +69,90 @@ function EmployeeTable() {
   // Form validation using Yup
   const validationSchema = Yup.object({
     employeeName: Yup.string().required('Employee name is required'),
+    email: Yup.string().email('Enter a valid email').required('Email is required'),
+    password: Yup.string().required('Password is required'),
   });
 
   // Formik setup for handling form submission and validation
   const formik = useFormik({
     initialValues: {
       employeeName: '',
+      email: '',
+      password: '',
     },
     validationSchema: validationSchema,
     onSubmit: async (values) => {
-      try {
-        const employeeData = {
-          Employee_name: values.employeeName,
-        };
-        await addEmployee(employeeData);
-        getProjects(); // Refresh employee list after adding
-        setOpenDialog(false); // Close dialog on success
-        formik.resetForm(); // Reset form values
-      } catch (error) {
-        console.error("Error adding employee:", error);
+        try {
+          const employeeData = {
+            Employee_name: values.employeeName,
+            email: values.email,
+            password: values.password,
+          };
+      
+          // Attempt to add the employee
+          await addEmployee(employeeData);
+          getProjects(); // Refresh employee list after adding
+          setOpenDialog(false); // Close dialog on success
+          formik.resetForm(); // Reset form values
+          setServerError(''); // Clear server error
+        } catch (error: any) {
+          // Log the entire error object for debugging
+          console.error("Error adding employee:", error);
+      
+          // Improved error handling
+          if (error.message) {
+            const errorMessage = error.message; // Get the error message
+            if (errorMessage === 'Email is already in use.') {
+              setServerError('Email is already in use.'); // Display specific message
+              formik.setFieldError('email', 'Email is already in use.'); // Set Formik error for email field
+            } else {
+              setServerError('Failed to add employee. Please try again.'); // Generic error message
+            }
+          } else {
+            // If there's an error without a message (network error, etc.)
+            setServerError('Failed to add employee. Please try again.');
+          }
+        }
       }
-    },
+      
   });
 
   const onClickHandleSubmit = () => {
     formik.handleSubmit();
-  }
+  };
 
   // Function to handle closing the dialog
   const handleCloseDialog = () => {
     setOpenDialog(false);
     formik.resetForm(); // Reset form values and errors when closing dialog
+    setServerError(''); // Clear server error
   };
 
   return (
     <DataRenderLayoutAdmin>
-      <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%', paddingLeft: 2, paddingRight: 2, marginTop: -6, overflow: 'auto' }}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          width: '100%',
+          paddingLeft: 2,
+          paddingRight: 2,
+          marginTop: -6,
+          overflow: 'auto',
+        }}
+      >
         <CssBaseline />
 
         {/* Button to open dialog */}
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', zIndex: 200, marginTop: '4em', marginBottom: '-3em' }}>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+            zIndex: 200,
+            marginTop: '4em',
+            marginBottom: '-3em',
+          }}
+        >
           <Button variant="contained" color="primary" onClick={() => setOpenDialog(true)}>
             Add Employee
           </Button>
@@ -130,6 +175,33 @@ function EmployeeTable() {
                 error={formik.touched.employeeName && Boolean(formik.errors.employeeName)}
                 helperText={formik.touched.employeeName && formik.errors.employeeName}
               />
+              <TextField
+                label="Email"
+                fullWidth
+                margin="dense"
+                id="email"
+                name="email"
+                value={formik.values.email}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={formik.touched.email && Boolean(formik.errors.email)}
+                helperText={formik.touched.email && formik.errors.email}
+              />
+              <TextField
+                label="Password"
+                fullWidth
+                margin="dense"
+                id="password"
+                name="password"
+                type="password"
+                value={formik.values.password}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={formik.touched.password && Boolean(formik.errors.password)}
+                helperText={formik.touched.password && formik.errors.password}
+              />
+              {/* Display server error message */}
+              {/* {serverError && <div style={{ color: 'red' }}>{serverError}</div>} */}
             </form>
           </DialogContent>
           <DialogActions>
@@ -162,12 +234,10 @@ function EmployeeTable() {
                     <StyledTableCell component="th" scope="row">
                       {index + 1}
                     </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {employee?.Employee_name}
-                    </StyledTableCell>
+                    <StyledTableCell align="center">{employee?.Employee_name}</StyledTableCell>
                     <StyledTableCell align="center">{employee?.createdAt}</StyledTableCell>
                     <StyledTableCell align="center">{employee?.Status}</StyledTableCell>
-                    <StyledTableCell style={{ textAlign: "center" }}>
+                    <StyledTableCell style={{ textAlign: 'center' }}>
                       <Tooltip title="Edit" placement="top">
                         <IconButton style={{ marginRight: '5px' }}>
                           <MdEdit color="blue" />

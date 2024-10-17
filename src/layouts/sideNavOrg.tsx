@@ -40,30 +40,36 @@ export default function SideNavOrg(props: any) {
                 component="li"
                 sx={{
                     width: '100%',
-                    background: isActive ? "#6E2EC0" : 'transparent',
-                    borderRadius: "8px",
+                    background: isActive ? "linear-gradient(to right, #f26729 2%, #333333 1%)" : 'transparent',
+                    clipPath: isActive ? 'polygon(0 0, 10% , 20% 100%, 0 100%)' : 'none', // Clip-path for the left part
+
                     height: "40px",
-                    marginBottom: "20px",
+                    marginBottom: "10px",
                     gap: 2,
                     cursor: 'pointer',
-                    color: isActive ? 'white' : 'white',
-                    '&:hover': {
-                        backgroundColor: isActive ? "linear-gradient(195deg, #49a3f1, #1A73E8)" : '#6E2EC0',
-                        color: 'white',
-                    }
+                    color: isActive ? 'grey' : 'black',
+                   '&:hover': {
+                    backgroundColor: isActive ? "grey" : '#333333', // Slightly darker cyan on hover
+                    color: 'black',
+                }
                 }}
             >
                 <Box sx={{
-                    color: isActive ? 'white' : 'inherit',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: "center"
+                     color: isActive ? 'white' : 'inherit',
+                     display: 'flex',
+                     justifyContent: 'center',
+                     alignItems: "center",
+                     '&:hover': { color: 'white' }
                 }}>
                     {item?.icon}
                 </Box>
                 <ListItemText primary={item?.name} sx={{
                     fontSize: '20px',
                     textTransform: "capitalize",
+                    whiteSpace: 'nowrap',
+                    color:'white',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
                     '&:hover': { color: 'white' }
                 }} />
                 
@@ -73,17 +79,18 @@ export default function SideNavOrg(props: any) {
 
     return (
         <Box sx={{
-            display: 'flex', flexDirection: "column", alignItems: 'center', height: '100vh',
-            boxShadow: "0rem 1.25rem 1.6875rem 0rem rgba(0, 0, 0, 0.05)", background: "#1B2A49",
+            display: 'flex', flexDirection: "column", alignItems: 'center', height: '92vh',
+            boxShadow: "0rem 1.25rem 1.6875rem 0rem rgba(0, 0, 0, 0.05)",
             position: showMiniNav ? "absolute" : "relative",
             zIndex: "1000",
-            width: '100%'
+            width: '100%',
+            backgroundColor: '#29315a'
         }}>
             {showMiniNav &&
                 <CloseIcon sx={{ color: "white", alignSelf: "flex-end" }} onClick={() => setShowMiniNav(!showMiniNav)} />
             }
             <Divider sx={{ borderColor: "gray", width: '100%' }} />
-            <List sx={{ width: '100%', gap: 20 }}>
+            <List sx={{ width: '100%', gap: 20, background: '#29315a' }}>
                 {routes?.map((x: any) =>
                     <RenderRoutes item={x} />
                 )}

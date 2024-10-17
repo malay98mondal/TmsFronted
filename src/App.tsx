@@ -11,10 +11,10 @@ import AdminLayout from './layouts/adminLayout';
 import OrganizationLayout from './layouts/organizationLayout';
 import OrganizationUserLayout from './layouts/organizationUserLayout';
 import DataRenderLayoutUser from './layouts/dataRenderLayoutUser';
-import OrganizationProviderLayout from './layouts/organizationProviderLayout';
 import OrganizationAgentLayout from './layouts/organizationAgentLayout';
 import Hello from './components/Hello';
 import ProjectTable from './components/Projets/ProjectTable';
+import { protectedRouter } from './protectedRoutes/protectedRoute';
 
 const Sidenav = React.lazy(() => import('./layouts/sideNav'));
 const Navbar = React.lazy(() => import('./layouts/navAdmin'));
@@ -25,6 +25,7 @@ const EmployTaskTable = React.lazy(() => import('./components/EmployTask/EmployT
 const TaskDetails =React.lazy(()=>import('./components/Task/TaskDetails'));
 const CompletedTask =React.lazy(()=>import('./components/EmployTask/EmployCompleteTask'));
 const EmployeeTable =React.lazy(()=>import('./components/Employee/EmployeTable'));
+const LoginPage =React.lazy(()=>import('./components/Login/LoginPage'));
 
 function App() {
 
@@ -33,24 +34,9 @@ function App() {
   const router = createBrowserRouter([
     {
       path: 'projects',
-      element: (
-        <Suspense
-          fallback={
-            <Box
-              display="flex"
-              justifyContent="center"
-              alignItems="center"
-              height="100%"
-              width="100%"
-              padding="2em"
-            >
-              <CircularProgress />
-            </Box>
-          }
-        >
-          <AdminLayout darkMode={darkMode} setDarkMode={setDarkMode} />
-        </Suspense>
-      ),
+      element: protectedRouter() == "manager" ? <React.Suspense fallback={<Box display="flex" justifyContent="center" alignItems="center" height="100%" width="100%" padding='2em'><CircularProgress /></Box>}>
+        <AdminLayout darkMode={darkMode} setDarkMode={setDarkMode} /></React.Suspense> : <Navigate to="/login" />,
+
       children: [
 
         { path: '', element: <React.Suspense fallback={<Box display="flex" justifyContent="center" alignItems="center" height="100%" width="100%" padding='2em'><CircularProgress /></Box>}><Hello /></React.Suspense> },
@@ -62,24 +48,9 @@ function App() {
     },
     {
       path: 'org-dashboard',
-      element: (
-        <Suspense
-          fallback={
-            <Box
-              display="flex"
-              justifyContent="center"
-              alignItems="center"
-              height="100%"
-              width="100%"
-              padding="2em"
-            >
-              <CircularProgress />
-            </Box>
-          }
-        >
-          <OrganizationLayout darkMode={darkMode} setDarkMode={setDarkMode} />
-        </Suspense>
-      ),
+      element: protectedRouter() == "teamlead" ? <React.Suspense fallback={<Box display="flex" justifyContent="center" alignItems="center" height="100%" width="100%" padding='2em'><CircularProgress /></Box>}>
+      <OrganizationLayout darkMode={darkMode} setDarkMode={setDarkMode} /></React.Suspense> : <Navigate to="/login" />,
+
       children: [
         { path: 'task-table', element: <React.Suspense fallback={<Box display="flex" justifyContent="center" alignItems="center" height="100%" width="100%" padding='2em'><CircularProgress /></Box>}><TaskCreation /></React.Suspense> },
         { path: 'task-table/task-details/:Task_details_Id', element: <React.Suspense fallback={<Box display="flex" justifyContent="center" alignItems="center" height="100%" width="100%" padding='2em'><CircularProgress /></Box>}><TaskDetails /></React.Suspense> },
@@ -88,31 +59,17 @@ function App() {
     },
     {
       path: "employee-task",
-      element: (
-        <Suspense
-          fallback={
-            <Box
-              display="flex"
-              justifyContent="center"
-              alignItems="center"
-              height="100%"
-              width="100%"
-              padding="2em"
-            >
-              <CircularProgress />
-            </Box>
-          }
-        >
-          <OrganizationAgentLayout/>
-        </Suspense>
-      ),
+      element: protectedRouter() == "member" ? <React.Suspense fallback={<Box display="flex" justifyContent="center" alignItems="center" height="100%" width="100%" padding='2em'><CircularProgress /></Box>}>
+      <OrganizationAgentLayout  /></React.Suspense> : <Navigate to="/login" />,
+
       children: [
         { path: 'EmployTask', element: <React.Suspense fallback={<Box display="flex" justifyContent="center" alignItems="center" height="100%" width="100%" padding='2em'><CircularProgress /></Box>}><EmployTaskTable /></React.Suspense> },
         { path: 'CompletedTask', element: <React.Suspense fallback={<Box display="flex" justifyContent="center" alignItems="center" height="100%" width="100%" padding='2em'><CircularProgress /></Box>}><CompletedTask /></React.Suspense> },
       ]
     },
 
-    
+    { path: '/login', element: <React.Suspense fallback={<Box display="flex" justifyContent="center" alignItems="center" height="100%" width="100%" padding='2em'><CircularProgress /></Box>}><LoginPage /></React.Suspense> },
+
     // Add more routes here as needed
   ]);
 
