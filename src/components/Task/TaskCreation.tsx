@@ -132,6 +132,10 @@ function TaskCreation() {
   // if (error) {
   //   return <div>{error}</div>;
   // }
+  const normalizeDate = (date: any) => {
+    return date ? new Date(date).toISOString().split('T')[0] : '';
+};
+
 
   return (
     <DataRenderLayoutOrg>
@@ -195,7 +199,7 @@ function TaskCreation() {
                       {index + 1 + (currentPage - 1) * tasksPerPage} {/* Adjust for pagination */}
                     </StyledTableCell>
                     <StyledTableCell align="center">{task?.Employee?.Employee_name}</StyledTableCell>
-                    <StyledTableCell align="center">{task?.Start_Date}</StyledTableCell>
+                    <StyledTableCell align="center">{normalizeDate(task?.Start_Date)}</StyledTableCell>
                     <StyledTableCell align="center">{task?.Start_Time}</StyledTableCell>
                     <StyledTableCell align="center">{task?.Task_Details}</StyledTableCell>
                     <StyledTableCell align="center">{task?.Status}</StyledTableCell>

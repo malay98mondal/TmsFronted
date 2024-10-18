@@ -1,10 +1,8 @@
 // /src/api/taskDetailsAPI.ts
 import axios from 'axios';
 import Cookies from 'js-cookie';
-import { memberCookiers } from '../ConfigData';
+import { API_URL, memberCookiers } from '../ConfigData';
 
-// Base URL for your backend API
-const API_URL = 'http://localhost:5000/api/v1';  // Replace with your actual API URL
 
 // Function to fetch tasks assigned to an employee by their ID
 // export const getTasksByAssignedEmployee = async (employeeId: number, page: number, limit: number, search: string) => {

@@ -47,6 +47,19 @@ const Login: React.FC = () => {
   const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>(
     'success'
   );
+  const handleLogout = () => {
+    if (Cookies.get(managerCookies)) {
+      Cookies.remove(managerCookies);
+    } else if (Cookies.get(teamLeadCookies)) {
+      Cookies.remove(teamLeadCookies);
+    } else if (Cookies.get(memberCookiers)) {
+      Cookies.remove(memberCookiers);
+    } 
+  };
+
+  function clearCookies() {
+    handleLogout();
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,6 +67,7 @@ const Login: React.FC = () => {
 
     try {
       const data = await loginUser(email, password);
+      clearCookies();
       const { access_token, type } = data;
       console.log(data)
       if (data.type === 1) {

@@ -18,9 +18,10 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  Typography,
 } from '@mui/material';
 import { MdDelete, MdEdit } from 'react-icons/md';
-import { getEmployees, addEmployee } from '../../apiRequest/ProjectRoutes/ProjectRoutes';
+import {  addEmployee, getEmployees1 } from '../../apiRequest/ProjectRoutes/ProjectRoutes';
 import DataRenderLayoutAdmin from '../../layouts/dataRenderLayoutAdmin';
 import { styled } from '@mui/material/styles';
 import { tableCellClasses } from '@mui/material/TableCell';
@@ -29,8 +30,8 @@ import * as Yup from 'yup';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
-      backgroundColor: '#f26729',
-    color:'white' ,
+    backgroundColor: '#f26729',
+    color: 'white',
   },
   [`&.${tableCellClasses.body}`]: {
     fontSize: 14,
@@ -46,17 +47,22 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-
 function EmployeeTable() {
   const [employees, setEmployees] = useState<any[]>([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [serverError, setServerError] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalEmployees, setTotalEmployees] = useState(0);
+  const [search, setSearch] = useState('');
+  const pageSize = 10; // Define page size
 
-  // Fetch employee data
   const getProjects = async () => {
     try {
-      const data = await getEmployees();
+      const data = await getEmployees1(currentPage, pageSize, search);
       setEmployees(data.data);
+      setTotalPages(data.totalPages);
+      setTotalEmployees(data.total);
     } catch (error: any) {
       console.error("Failed to fetch employees:", error);
     }
@@ -64,16 +70,14 @@ function EmployeeTable() {
 
   useEffect(() => {
     getProjects();
-  }, []);
+  }, [currentPage, search]);
 
-  // Form validation using Yup
   const validationSchema = Yup.object({
     employeeName: Yup.string().required('Employee name is required'),
     email: Yup.string().email('Enter a valid email').required('Email is required'),
     password: Yup.string().required('Password is required'),
   });
 
-  // Formik setup for handling form submission and validation
   const formik = useFormik({
     initialValues: {
       employeeName: '',
@@ -82,51 +86,47 @@ function EmployeeTable() {
     },
     validationSchema: validationSchema,
     onSubmit: async (values) => {
-        try {
-          const employeeData = {
-            Employee_name: values.employeeName,
-            email: values.email,
-            password: values.password,
-          };
-      
-          // Attempt to add the employee
-          await addEmployee(employeeData);
-          getProjects(); // Refresh employee list after adding
-          setOpenDialog(false); // Close dialog on success
-          formik.resetForm(); // Reset form values
-          setServerError(''); // Clear server error
-        } catch (error: any) {
-          // Log the entire error object for debugging
-          console.error("Error adding employee:", error);
-      
-          // Improved error handling
-          if (error.message) {
-            const errorMessage = error.message; // Get the error message
-            if (errorMessage === 'Email is already in use.') {
-              setServerError('Email is already in use.'); // Display specific message
-              formik.setFieldError('email', 'Email is already in use.'); // Set Formik error for email field
-            } else {
-              setServerError('Failed to add employee. Please try again.'); // Generic error message
-            }
+      try {
+        const employeeData = {
+          Employee_name: values.employeeName,
+          email: values.email,
+          password: values.password,
+        };
+
+        await addEmployee(employeeData);
+        getProjects();
+        setOpenDialog(false);
+        formik.resetForm();
+        setServerError('');
+      } catch (error: any) {
+        console.error("Error adding employee:", error);
+        if (error.message) {
+          const errorMessage = error.message;
+          if (errorMessage === 'Email is already in use.') {
+            setServerError('Email is already in use.');
+            formik.setFieldError('email', 'Email is already in use.');
           } else {
-            // If there's an error without a message (network error, etc.)
             setServerError('Failed to add employee. Please try again.');
           }
+        } else {
+          setServerError('Failed to add employee. Please try again.');
         }
       }
-      
+    }
   });
 
   const onClickHandleSubmit = () => {
     formik.handleSubmit();
   };
 
-  // Function to handle closing the dialog
   const handleCloseDialog = () => {
     setOpenDialog(false);
-    formik.resetForm(); // Reset form values and errors when closing dialog
-    setServerError(''); // Clear server error
+    formik.resetForm();
+    setServerError('');
   };
+  const normalizeDate = (date: any) => {
+    return date ? new Date(date).toISOString().split('T')[0] : '';
+};
 
   return (
     <DataRenderLayoutAdmin>
@@ -137,28 +137,34 @@ function EmployeeTable() {
           width: '100%',
           paddingLeft: 2,
           paddingRight: 2,
-          marginTop: -6,
+          marginTop: -8,
           overflow: 'auto',
         }}
       >
         <CssBaseline />
 
-        {/* Button to open dialog */}
         <Box
           sx={{
             display: 'flex',
-            justifyContent: 'flex-end',
+            justifyContent: 'space-between',
             zIndex: 200,
             marginTop: '4em',
-            marginBottom: '-3em',
+            marginBottom: '-3.5em',
           }}
         >
-          <Button variant="contained" color="primary" onClick={() => setOpenDialog(true)}>
+          <TextField
+            label="Search Employees"
+            variant="outlined"
+            margin="normal"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            size='small'
+          />
+          <Button sx={{ height: '3em', marginTop: '1.3em' }} variant="contained" color="primary" onClick={() => setOpenDialog(true)}>
             Add Employee
           </Button>
         </Box>
 
-        {/* Dialog for adding employee */}
         <Dialog open={openDialog} onClose={handleCloseDialog}>
           <DialogTitle>Add Employee</DialogTitle>
           <DialogContent>
@@ -200,8 +206,6 @@ function EmployeeTable() {
                 error={formik.touched.password && Boolean(formik.errors.password)}
                 helperText={formik.touched.password && formik.errors.password}
               />
-              {/* Display server error message */}
-              {/* {serverError && <div style={{ color: 'red' }}>{serverError}</div>} */}
             </form>
           </DialogContent>
           <DialogActions>
@@ -214,9 +218,12 @@ function EmployeeTable() {
           </DialogActions>
         </Dialog>
 
-        {/* Table for displaying employees */}
         <Box component="main" sx={{ flexGrow: 1, bgcolor: 'background.default', width: '100%' }}>
           <Toolbar />
+
+          {/* Display total employees and pagination information */}
+         
+
           <TableContainer component={Paper}>
             <Table sx={{ minWidth: 700 }} aria-label="customized table">
               <TableHead>
@@ -229,23 +236,23 @@ function EmployeeTable() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {employees?.map((employee, index) => (
-                  <StyledTableRow key={employee.Project_Id}>
+                {employees.map((employee, index) => (
+                  <StyledTableRow key={employee.Emp_Id}>
                     <StyledTableCell component="th" scope="row">
-                      {index + 1}
+                      {index + 1 + (currentPage - 1) * pageSize}
                     </StyledTableCell>
                     <StyledTableCell align="center">{employee?.Employee_name}</StyledTableCell>
-                    <StyledTableCell align="center">{employee?.createdAt}</StyledTableCell>
-                    <StyledTableCell align="center">{employee?.Status}</StyledTableCell>
+                    <StyledTableCell align="center">{normalizeDate(employee?.createdAt)}</StyledTableCell>
+                    <StyledTableCell align="center">{employee?.Is_deleted ? 'Deleted' : 'Active'}</StyledTableCell>
                     <StyledTableCell style={{ textAlign: 'center' }}>
-                      <Tooltip title="Edit" placement="top">
-                        <IconButton style={{ marginRight: '5px' }}>
-                          <MdEdit color="blue" />
+                      <Tooltip title="Edit">
+                        <IconButton>
+                          <MdEdit />
                         </IconButton>
                       </Tooltip>
-                      <Tooltip title="Delete" placement="top">
+                      <Tooltip title="Delete">
                         <IconButton>
-                          <MdDelete color="red" />
+                          <MdDelete />
                         </IconButton>
                       </Tooltip>
                     </StyledTableCell>
@@ -254,6 +261,22 @@ function EmployeeTable() {
               </TableBody>
             </Table>
           </TableContainer>
+          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: 2 }}>
+            <Typography variant="body2" component="div">
+              {/* Previous Button */}
+              <Button disabled={currentPage === 1} onClick={() => setCurrentPage(currentPage - 1)}>
+                Previous
+              </Button>
+
+              {/* Page Information */}
+              Page {currentPage} of {totalPages} | Total Employees: {totalEmployees}
+
+              {/* Next Button */}
+              <Button disabled={employees.length < pageSize || currentPage === totalPages} onClick={() => setCurrentPage(currentPage + 1)}>
+                Next
+              </Button>
+            </Typography>
+          </Box>
         </Box>
       </Box>
     </DataRenderLayoutAdmin>

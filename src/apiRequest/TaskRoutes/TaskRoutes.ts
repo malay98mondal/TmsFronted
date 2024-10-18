@@ -1,9 +1,8 @@
 import axios from 'axios';
 import Cookies from 'js-cookie';
-import { managerCookies, memberCookiers, teamLeadCookies } from '../ConfigData';
+import { API_URL, managerCookies, memberCookiers, teamLeadCookies } from '../ConfigData';
 
 
-const API_URL = 'http://localhost:5000/api/v1';  // Replace with your actual API URL
 
 export const getTasksByEmployeeId = async (search: string, page: number, limit: number) => {
   const token = Cookies.get(teamLeadCookies);
