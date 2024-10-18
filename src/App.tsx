@@ -9,7 +9,6 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box';
 import AdminLayout from './layouts/adminLayout';
 import OrganizationLayout from './layouts/organizationLayout';
-import OrganizationUserLayout from './layouts/organizationUserLayout';
 import DataRenderLayoutUser from './layouts/dataRenderLayoutUser';
 import OrganizationAgentLayout from './layouts/organizationAgentLayout';
 import Hello from './components/Hello';
@@ -18,7 +17,6 @@ import { protectedRouter } from './protectedRoutes/protectedRoute';
 
 const Sidenav = React.lazy(() => import('./layouts/sideNav'));
 const Navbar = React.lazy(() => import('./layouts/navAdmin'));
-const Landing = React.lazy(() => import('./layouts/UserDashboards'));
 const ProjectMember = React.lazy(() => import('./components/Projets/ProjectMember'));
 const TaskCreation = React.lazy(() => import('./components/Task/TaskCreation'));
 const EmployTaskTable = React.lazy(() => import('./components/EmployTask/EmployTaskTable'));

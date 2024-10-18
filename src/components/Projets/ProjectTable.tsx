@@ -7,18 +7,17 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { Box, Button, CssBaseline, IconButton, Toolbar, Tooltip } from '@mui/material';
+import { Box, Button, CssBaseline, IconButton, Toolbar, Tooltip, TextField, Pagination, Typography } from '@mui/material';
 import { MdDelete, MdEdit } from 'react-icons/md';
 import { Link } from 'react-router-dom';
 import AddProjectForm from './AddProjectForm';
-import { fetchProjects } from '../../apiRequest/ProjectRoutes/ProjectRoutes'; // Assuming this is already working
-import { addProject } from '../../apiRequest/ProjectRoutes/ProjectRoutes'; // Assuming this is your API function
+import { fetchProjects, addProject } from '../../apiRequest/ProjectRoutes/ProjectRoutes';
 import DataRenderLayoutAdmin from '../../layouts/dataRenderLayoutAdmin';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
-      backgroundColor: '#f26729',
-     color:'white' ,
+    backgroundColor: '#f26729',
+    color: 'white',
   },
   [`&.${tableCellClasses.body}`]: {
     fontSize: 14,
@@ -34,19 +33,23 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-
-
-
 function ProjectTable() {
   const [projects, setProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [openDialog, setOpenDialog] = useState(false); // Manage dialog open/close state
   const [error, setError] = useState<string | null>(null);
-  const getProjects = async () => {
+  const [searchTerm, setSearchTerm] = useState(''); // For searching projects
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [totalPages, setTotalPages] = useState(1);
+
+  const getProjects = async (page = 1, search = '') => {
+    setLoading(true);
     try {
-      const data = await fetchProjects();
+      const data = await fetchProjects(page, pageSize, search);
       if (data.success) {
         setProjects(data.data);
+        setTotalPages(data.pagination.totalPages);
       }
     } catch (error: any) {
       setError("Failed to fetch projects");
@@ -54,41 +57,40 @@ function ProjectTable() {
       setLoading(false);
     }
   };
-  // Fetch the list of projects
+
+  // Fetch projects when the component loads or when page/search changes
   useEffect(() => {
-   
-
-    getProjects();
-  }, []);
-
-  // Handle open dialog
-  const handleOpenDialog = () => {
-    setOpenDialog(true);
-  };
-
-  // Handle close dialog
-  const handleCloseDialog = () => {
-    setOpenDialog(false);
-  };
+    getProjects(currentPage, searchTerm);
+  }, [currentPage, searchTerm]);
 
   // Handle form submission
-  const handleFormSubmit = async (values: { projectName: string ,Status:string}) => {
+  const handleFormSubmit = async (values: { projectName: string, Status: string }) => {
     try {
-      // Assuming that projectData requires both Project_Name and Status fields.
       const projectData = {
         Project_Name: values.projectName,
-        Status: values.Status, 
+        Status: values.Status,
       };
 
       const newProject = await addProject(projectData);
-      
-      getProjects();
-
-      console.log('Project added successfully:', newProject);
+      getProjects(currentPage, searchTerm); // Fetch projects again after adding new project
     } catch (error) {
       console.error("Error adding project:", error);
-    } 
+    }
   };
+
+  // Handle search input change
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+    setCurrentPage(1); // Reset to page 1 when searching
+  };
+
+  // Handle page change (from pagination component)
+  const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
+    setCurrentPage(value);
+  };
+  const normalizeDate = (date: any) => {
+    return date ? new Date(date).toISOString().split('T')[0] : '';
+};
 
 
   return (
@@ -97,14 +99,21 @@ function ProjectTable() {
         <CssBaseline />
 
         {/* Button to trigger the Add Project dialog */}
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', zIndex: 200, marginTop: '4em', marginBottom: '-3em' }}>
-          <Button variant="contained" color="primary" onClick={handleOpenDialog}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', zIndex: 200, marginTop: '4em', marginBottom: '-3em' }}>
+          <TextField
+            label="Search Projects"
+            variant="outlined"
+            value={searchTerm}
+            onChange={handleSearchChange}
+            size="small"
+          />
+          <Button variant="contained" color="primary" onClick={() => setOpenDialog(true)}>
             Add Project
           </Button>
         </Box>
 
         {/* Add Project Dialog */}
-        <AddProjectForm open={openDialog} onClose={handleCloseDialog} onSubmit={handleFormSubmit} />
+        <AddProjectForm open={openDialog} onClose={() => setOpenDialog(false)} onSubmit={handleFormSubmit} />
 
         {/* Projects Table */}
         <Box component="main" sx={{ flexGrow: 1, bgcolor: 'background.default', width: '100%' }}>
@@ -121,37 +130,66 @@ function ProjectTable() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {projects?.map((project, index) => (
-                  <StyledTableRow key={project.Project_Id}>
-                    <StyledTableCell component="th" scope="row">
-                      {index + 1}
-                    </StyledTableCell>
+                {projects.length > 0 ? (
+                  projects.map((project, index) => (
+                    <StyledTableRow key={project.Project_Id}>
+                      <StyledTableCell component="th" scope="row">
+                        {index + 1}
+                      </StyledTableCell>
 
-                    <StyledTableCell align="center">
-                      <Link style={{ textDecoration: 'none' }} to={`/projects/project-member/${project.Project_Id}`}>
-                        {project?.Project_Name}
-                      </Link>
-                    </StyledTableCell>
-                    <StyledTableCell align="center">{project?.createdAt}</StyledTableCell>
-                    <StyledTableCell align="center">{project?.Status}</StyledTableCell>
-                    <StyledTableCell style={{ textAlign: "center" }}>
-                      <Tooltip title="Edit" placement="top">
-                        <IconButton style={{ marginRight: '5px' }}>
-                          <MdEdit color="blue" />
-                        </IconButton>
-                      </Tooltip>
+                      <StyledTableCell align="center">
+                        <Link style={{ textDecoration: 'none' }} to={`/projects/project-member/${project.Project_Id}`}>
+                          {project?.Project_Name}
+                        </Link>
+                      </StyledTableCell>
+                      <StyledTableCell align="center">{normalizeDate(project?.createdAt)}</StyledTableCell>
+                      <StyledTableCell align="center">{project?.Status}</StyledTableCell>
+                      <StyledTableCell align="center">
+                        <Tooltip title="Edit" placement="top">
+                          <IconButton style={{ marginRight: '5px' }}>
+                            <MdEdit color="blue" />
+                          </IconButton>
+                        </Tooltip>
 
-                      <Tooltip title="Delete" placement="top">
-                        <IconButton>
-                          <MdDelete color="red" />
-                        </IconButton>
-                      </Tooltip>
+                        <Tooltip title="Delete" placement="top">
+                          <IconButton>
+                            <MdDelete color="red" />
+                          </IconButton>
+                        </Tooltip>
+                      </StyledTableCell>
+                    </StyledTableRow>
+                  ))
+                ) : (
+                  <StyledTableRow>
+                    <StyledTableCell colSpan={5} align="center">
+                      <Typography variant="body1" color="textSecondary">
+                        No projects found
+                      </Typography>
                     </StyledTableCell>
                   </StyledTableRow>
-                ))}
+                )}
               </TableBody>
             </Table>
           </TableContainer>
+
+          {/* Pagination Component */}
+          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: 2 }}>
+            <Typography variant="body2" component="div">
+              {/* Previous Button */}
+              <Button disabled={currentPage === 1} onClick={() => setCurrentPage(currentPage - 1)}>
+                Previous
+              </Button>
+
+              {/* Page Information */}
+              Page {currentPage} of {totalPages} | Total Projects: {projects.length}
+
+              {/* Next Button */}
+              <Button disabled={projects.length < pageSize || currentPage === totalPages} onClick={() => setCurrentPage(currentPage + 1)}>
+                Next
+              </Button>
+            </Typography>
+          </Box>
+
         </Box>
       </Box>
     </DataRenderLayoutAdmin>

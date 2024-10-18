@@ -123,6 +123,10 @@ function EmployTaskTable() {
     const handleSnackbarClose = () => {
         setSnackbarOpen(false);
     };
+    const normalizeDate = (date: any) => {
+        return date ? new Date(date).toISOString().split('T')[0] : '';
+    };
+    
 
     return (
         <DataRenderLayoutAgent>
@@ -166,7 +170,7 @@ function EmployTaskTable() {
                                             </StyledTableCell>
                                             <StyledTableCell align="center">{task?.Task_Details}</StyledTableCell>
                                             <StyledTableCell align="center">{task?.Start_Time}</StyledTableCell>
-                                            <StyledTableCell align="center">{task?.End_Date}</StyledTableCell>
+                                            <StyledTableCell align="center">{normalizeDate(task?.End_Date)}</StyledTableCell>
                                             <StyledTableCell align="center">{task?.End_Time}</StyledTableCell>
                                             <StyledTableCell align="center">{task?.Status}</StyledTableCell>
                                             <StyledTableCell align="center">

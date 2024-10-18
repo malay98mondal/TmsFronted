@@ -88,7 +88,10 @@ function EmployTaskTable() {
         setSearch(event.target.value);
         setPage(1);
     };
-
+    const normalizeDate = (date: any) => {
+        return date ? new Date(date).toISOString().split('T')[0] : '';
+    };
+    
     return (
         <DataRenderLayoutAgent>
             <Box sx={{ width: '100%', paddingLeft: 2, paddingRight: 2, marginTop: 1, overflow: 'auto' }}>
@@ -135,7 +138,7 @@ function EmployTaskTable() {
                                             </StyledTableCell>
                                             <StyledTableCell align="center">{task?.Task_Details}</StyledTableCell>
                                             <StyledTableCell align="center">{task?.Start_Time}</StyledTableCell>
-                                            <StyledTableCell align="center">{task?.End_Date}</StyledTableCell>
+                                            <StyledTableCell align="center">{normalizeDate(task?.End_Date)}</StyledTableCell>
                                             <StyledTableCell style={{ textAlign: "center" }}>
                                                 {task?.End_Time}
                                             </StyledTableCell>
