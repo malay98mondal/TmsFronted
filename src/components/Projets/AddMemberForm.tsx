@@ -40,9 +40,16 @@ const AddMemberForm = (props: any) => {
             try {
                 const { Emp_Id, Role_Id, Degesination } = values; // Destructure Degesination
                 const response = await addOrUpdateProjectEmployee(Number(id), Number(Emp_Id), Number(Role_Id), Degesination); // Include Degesination in the API call
-                console.log('Success:', response);
-                fetchEmployees();
-                onClose();
+                console.log(response)
+                // Check if the response indicates success
+                if (response && response.success) {
+                    console.log('Success:', response.message); // Log success message
+                    fetchEmployees();
+                    onClose();
+                } else {
+                    // Handle unexpected successful responses (if any)
+                    formik.setFieldError('Emp_Id', response.message || 'Unexpected response format. Please try again.');
+                }
             } catch (error: any) {
                 console.error('Complete Error Object:', error);  // Log the complete error for debugging
         
@@ -72,6 +79,8 @@ const AddMemberForm = (props: any) => {
                 }
             }
         }
+        
+        
         
     });
 

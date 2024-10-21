@@ -15,6 +15,7 @@ interface AddTaskFormProps {
     open: boolean;
     onClose: () => void;
     projectId: number;
+    fetchTasks:()=>void;
 }
 
 // Validation Schema using Yup
@@ -37,7 +38,7 @@ const validationSchema = Yup.object({
     Assigned_Emp_Id: Yup.number().required('Assigned employe is required'), // Assuming it's nullable, adjust as needed
 });
 
-const AddTaskForm: React.FC<AddTaskFormProps> = ({ open, onClose, projectId }) => {
+const AddTaskForm: React.FC<AddTaskFormProps> = ({ open, onClose, projectId,fetchTasks }) => {
     const formik = useFormik({
         initialValues: {
             Task_Details: '',
@@ -60,6 +61,7 @@ const AddTaskForm: React.FC<AddTaskFormProps> = ({ open, onClose, projectId }) =
             try {
                 const response = await createTask(newTask); // Call your createTask function
                 console.log('Task created successfully: ', response);
+                fetchTasks();
                 onClose(); // Close the dialog after saving
             } catch (error) {
                 console.error('Error creating task:', error);

@@ -18,23 +18,26 @@ import {
   styled,
 } from '@mui/material';
 import { Link } from 'react-router-dom';
-import {  StyledToolbar } from '../SuperAdmin/styles';
+import { StyledToolbar } from '../SuperAdmin/styles';
 import { MdDelete } from 'react-icons/md';
-import {  getTasksByEmployeeId } from '../../apiRequest/TaskRoutes/TaskRoutes';
+import { getTasksByEmployeeId } from '../../apiRequest/TaskRoutes/TaskRoutes';
 import AddTaskForm from '../../components/Task/AddTask';
 import DataRenderLayoutOrg from '../../layouts/dataRenderLayoutOrg';
-import { importTasks } from '../../apiRequest/TaskRoutes/TaskRoutes'; 
+import { importTasks } from '../../apiRequest/TaskRoutes/TaskRoutes';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
       backgroundColor: '#f26729',
-    color:'white' ,
+      color: 'white',
+      padding: '1em 8px', // Adjust the padding as needed
   },
   [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
+      fontSize: 12, // Reduce the font size
+      padding: '4px 8px', // Adjust the padding as needed
   },
 }));
+
 
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
   '&:nth-of-type(odd)': {
@@ -62,20 +65,23 @@ function TaskCreation() {
   const [tasksPerPage] = useState<number>(5); // Number of tasks per page
   const fileInputRef = useRef<HTMLInputElement | null>(null); // Reference for the hidden file input
 
+
+
+  const fetchTasks = async () => {
+    try {
+      const data = await getTasksByEmployeeId(searchTerm, currentPage, tasksPerPage);
+      setTasks(data.tasks);
+      setTotalTasks(data.total);
+      setProjectId(data.projectId);
+      setProjectName(data.projectName);
+    } catch (err) {
+      setError('Failed to fetch tasks.');
+    }
+  };
   useEffect(() => {
-    const fetchTasks = async () => {
-      try {
-        const data = await getTasksByEmployeeId( searchTerm, currentPage, tasksPerPage);
-        setTasks(data.tasks);
-        setTotalTasks(data.total);
-        setProjectId(data.projectId);
-        setProjectName(data.projectName);
-      } catch (err) {
-        setError('Failed to fetch tasks.');
-      }
-    };
+
     fetchTasks();
-  }, [ searchTerm, currentPage, tasksPerPage]); // Dependencies
+  }, [searchTerm, currentPage, tasksPerPage]); // Dependencies
 
   // Function to handle opening the Add Task Form dialog
   const handleClickOpen = () => {
@@ -99,13 +105,17 @@ function TaskCreation() {
   };
 
   // Handle file upload
+  // Handle file upload
   const handleUpload = async () => {
     if (file) {
       try {
         const response = await importTasks(projectId, file);
         setMessage(response.message); // Handle success message
-        setFile(null); // Reset file input
-        await getTasksByEmployeeId( searchTerm, currentPage, tasksPerPage);
+        setFile(null); // Reset file state
+        if (fileInputRef.current) {
+          fileInputRef.current.value = ''; // Reset the file input field
+        }
+        fetchTasks(); // Refresh task list after upload
       } catch (error: any) {
         setMessage(error.message); // Handle error message
       }
@@ -113,6 +123,7 @@ function TaskCreation() {
       setMessage('Please select a file to upload.'); // Handle file selection error
     }
   };
+
 
   const handleFilePickerClick = () => {
     if (fileInputRef.current) {
@@ -134,7 +145,7 @@ function TaskCreation() {
   // }
   const normalizeDate = (date: any) => {
     return date ? new Date(date).toISOString().split('T')[0] : '';
-};
+  };
 
 
   return (
@@ -165,17 +176,17 @@ function TaskCreation() {
               </Button>
               {message && <p>{message}</p>} {/* Display message */}
             </Box>
-            <TextField 
-            variant="outlined"
-            placeholder="Search tasks..."
-            value={searchTerm}
-            size='small'
-            onChange={handleSearchChange}
-            sx={{ zIndex:200 }}
-          />
+            <TextField
+              variant="outlined"
+              placeholder="Search tasks..."
+              value={searchTerm}
+              size='small'
+              onChange={handleSearchChange}
+              sx={{ zIndex: 200 }}
+            />
           </StyledToolbar>
           {/* Search Input */}
-         
+
         </Box>
         <Box component="main" sx={{ flexGrow: 1, bgcolor: 'background.default', marginTop: '-4em', width: '100%' }}>
           <Toolbar />
@@ -183,7 +194,7 @@ function TaskCreation() {
             <Table sx={{ minWidth: 700 }} aria-label="customized table">
               <TableHead>
                 <TableRow>
-                  <StyledTableCell>Serial No</StyledTableCell>
+                  <StyledTableCell>S.No</StyledTableCell>
                   <StyledTableCell align="center">Employ name</StyledTableCell>
                   <StyledTableCell align="center">Start Date</StyledTableCell>
                   <StyledTableCell align="center">Start Time</StyledTableCell>
@@ -232,7 +243,7 @@ function TaskCreation() {
           </Box>
 
           {/* Add Task Form */}
-          <AddTaskForm open={open} onClose={handleClose} projectId={projectId} />
+          <AddTaskForm open={open} onClose={handleClose} fetchTasks={fetchTasks} projectId={projectId} />
         </Box>
       </Box>
     </DataRenderLayoutOrg>

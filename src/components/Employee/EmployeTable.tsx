@@ -30,11 +30,13 @@ import * as Yup from 'yup';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
-    backgroundColor: '#f26729',
-    color: 'white',
+      backgroundColor: '#f26729',
+      color: 'white',
+      padding: '1em 8px', // Adjust the padding as needed
   },
   [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
+      fontSize: 12, // Reduce the font size
+      padding: '8px 8px', // Adjust the padding as needed
   },
 }));
 
@@ -55,7 +57,7 @@ function EmployeeTable() {
   const [totalPages, setTotalPages] = useState(1);
   const [totalEmployees, setTotalEmployees] = useState(0);
   const [search, setSearch] = useState('');
-  const pageSize = 10; // Define page size
+  const pageSize = 5; // Define page size
 
   const getProjects = async () => {
     try {
@@ -228,7 +230,8 @@ function EmployeeTable() {
             <Table sx={{ minWidth: 700 }} aria-label="customized table">
               <TableHead>
                 <TableRow>
-                  <StyledTableCell>Serial No</StyledTableCell>
+                  <StyledTableCell>S.No</StyledTableCell>
+                  <StyledTableCell align="center">Emp Id</StyledTableCell>
                   <StyledTableCell align="center">Employee Name</StyledTableCell>
                   <StyledTableCell align="center">Created Date</StyledTableCell>
                   <StyledTableCell align="center">Status</StyledTableCell>
@@ -241,6 +244,7 @@ function EmployeeTable() {
                     <StyledTableCell component="th" scope="row">
                       {index + 1 + (currentPage - 1) * pageSize}
                     </StyledTableCell>
+                    <StyledTableCell align="center">{employee?.Emp_Id}</StyledTableCell>
                     <StyledTableCell align="center">{employee?.Employee_name}</StyledTableCell>
                     <StyledTableCell align="center">{normalizeDate(employee?.createdAt)}</StyledTableCell>
                     <StyledTableCell align="center">{employee?.Is_deleted ? 'Deleted' : 'Active'}</StyledTableCell>

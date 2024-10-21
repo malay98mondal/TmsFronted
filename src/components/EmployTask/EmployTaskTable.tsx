@@ -28,16 +28,17 @@ import { updateTask } from '../../apiRequest/TaskRoutes/TaskRoutes';
 
 
 
-
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
         backgroundColor: '#f26729',
-      color:'white' ,
+        color: 'white',
+        padding: '1em 8px', // Adjust the padding as needed
     },
     [`&.${tableCellClasses.body}`]: {
-      fontSize: 14,
+        fontSize: 12, // Reduce the font size
+        padding: '6px 8px', // Adjust the padding as needed
     },
-  }));
+}));
   
   const StyledTableRow = styled(TableRow)(({ theme }) => ({
     '&:nth-of-type(odd)': {
@@ -97,12 +98,14 @@ function EmployTaskTable() {
     const handleEditSubmit = async (values: any) => {
         try {
             const response = await updateTask(selectedTask.Task_details_Id, values.Status, values.Remarks);
+console.log('hello');
 
             if (response.message === "Task updated successfully") {
                 const updatedTask = response.task;
                 const updatedTasks = tasks.map((task) =>
                     task.Task_details_Id === updatedTask.Task_details_Id ? { ...task, ...updatedTask } : task
                 );
+
 
                 setTasks(updatedTasks); 
                 setSuccessMessage('Task updated successfully.'); 
@@ -152,7 +155,7 @@ function EmployTaskTable() {
                         <Table sx={{ minWidth: 700 }} aria-label="customized table">
                             <TableHead sx={{ backgroundColor: 'black' }}> {/* Set background color to black */}
                                 <TableRow>
-                                    <StyledTableCell sx={{ color: 'white' }}>Serial No</StyledTableCell> {/* Set text color to white */}
+                                    <StyledTableCell sx={{ color: 'white' }}>S.No</StyledTableCell> {/* Set text color to white */}
                                     <StyledTableCell align="center" sx={{ color: 'white' }}>Task</StyledTableCell>
                                     <StyledTableCell align="center" sx={{ color: 'white' }}>Start Time</StyledTableCell>
                                     <StyledTableCell align="center" sx={{ color: 'white' }}>End Date</StyledTableCell>
