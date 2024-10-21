@@ -16,11 +16,13 @@ import DataRenderLayoutAdmin from '../../layouts/dataRenderLayoutAdmin';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
-    backgroundColor: '#f26729',
-    color: 'white',
+      backgroundColor: '#f26729',
+      color: 'white',
+      padding: '1em 8px', // Adjust the padding as needed
   },
   [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
+      fontSize: 12, // Reduce the font size
+      padding: '6px 8px', // Adjust the padding as needed
   },
 }));
 
@@ -122,7 +124,7 @@ function ProjectTable() {
             <Table sx={{ minWidth: 700 }} aria-label="customized table">
               <TableHead>
                 <TableRow>
-                  <StyledTableCell>Serial No</StyledTableCell>
+                  <StyledTableCell>S.No</StyledTableCell>
                   <StyledTableCell align="center">Project Name</StyledTableCell>
                   <StyledTableCell align="center">Created Date</StyledTableCell>
                   <StyledTableCell align="center">Status</StyledTableCell>

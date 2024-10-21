@@ -11,14 +11,17 @@ import { useParams } from 'react-router-dom';
 import { AddUserButton, SearchField, StyledToolbar } from '../SuperAdmin/styles';
 import { getProjectEmployees } from '../../apiRequest/ProjectRoutes/ProjectRoutes';
 import AddMemberDialog from './AddMemberDialog';
+import DataRenderLayoutAdmin from '../../layouts/dataRenderLayoutAdmin';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
         backgroundColor: '#f26729',
         color: 'white',
+        padding: '1em 8px', // Adjust the padding as needed
     },
     [`&.${tableCellClasses.body}`]: {
-        fontSize: 14,
+        fontSize: 12, // Reduce the font size
+        padding: '6px 8px', // Adjust the padding as needed
     },
 }));
 
@@ -33,7 +36,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 
 const ProjectMember: React.FC = () => {
     const { id } = useParams();
-    const [employees, setEmployees] = useState<any[]>([]);    const [openAddDialog, setOpenAddDialog] = useState(false);
+    const [employees, setEmployees] = useState<any[]>([]); const [openAddDialog, setOpenAddDialog] = useState(false);
 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -89,6 +92,8 @@ const ProjectMember: React.FC = () => {
     };
 
     return (
+        <DataRenderLayoutAdmin>
+
         <Box sx={{ width: 'auto', overflow: 'auto', paddingLeft: 2, paddingRight: 2 }}>
             <Grid container spacing={2}>
                 <Grid item xs={12} padding={2} sx={{ marginTop: '1.4em' }}>
@@ -99,17 +104,19 @@ const ProjectMember: React.FC = () => {
                                 onChange={handleSearch}
                                 placeholder="Search by Employee Name"
                                 size='small'
-                           
+
                             />
                         </Grid>
                         <Grid>
-                        <Button variant="contained" color="primary" onClick={handleOpenAddDialog}  >
+                            <Button variant="contained" color="primary" onClick={handleOpenAddDialog}  >
                                 Add New Member
                             </Button>
                         </Grid>
-                        <AddMemberDialog open={openAddDialog} onClose={(shouldFetch) => handleCloseAddDialog(shouldFetch)} fetchEmployees={function (): void {
-                            throw new Error('Function not implemented.');
-                        }} />
+                        <AddMemberDialog
+                            open={openAddDialog}
+                            onClose={(shouldFetch) => handleCloseAddDialog(shouldFetch)}
+                            fetchEmployees={fetchEmployees} // Pass the actual function
+                        />
                     </Box>
                 </Grid>
             </Grid>
@@ -118,7 +125,8 @@ const ProjectMember: React.FC = () => {
                 <Table sx={{ minWidth: 700 }} aria-label="customized table">
                     <TableHead>
                         <TableRow>
-                            <StyledTableCell>Serial No</StyledTableCell>
+                            <StyledTableCell>S.No</StyledTableCell>
+                            <StyledTableCell align="center">Emp Id</StyledTableCell>
                             <StyledTableCell align="center">Project Name</StyledTableCell>
                             <StyledTableCell align="center">Employee Name</StyledTableCell>
                             <StyledTableCell align="center">Role</StyledTableCell>
@@ -132,6 +140,7 @@ const ProjectMember: React.FC = () => {
                                 <StyledTableCell component="th" scope="row">
                                     {page * rowsPerPage + index + 1}
                                 </StyledTableCell>
+                                <StyledTableCell align="center">{employee.Emp_Id}</StyledTableCell>
                                 <StyledTableCell align="center">{employee.Project_Name}</StyledTableCell>
                                 <StyledTableCell align="center">{employee.Employee_name}</StyledTableCell>
                                 <StyledTableCell align="center">{employee.Role_Name}</StyledTableCell>
@@ -162,8 +171,10 @@ const ProjectMember: React.FC = () => {
                 rowsPerPage={rowsPerPage}
                 onRowsPerPageChange={handleChangeRowsPerPage}
             />
-            
+
         </Box>
+        </DataRenderLayoutAdmin>
+
     );
 };
 

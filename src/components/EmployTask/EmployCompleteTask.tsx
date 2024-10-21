@@ -28,13 +28,14 @@ import { updateTask } from '../../apiRequest/TaskRoutes/TaskRoutes';
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
         backgroundColor: '#f26729',
-      color:'white' ,
+        color: 'white',
+        padding: '1em 8px', // Adjust the padding as needed
     },
     [`&.${tableCellClasses.body}`]: {
-      fontSize: 14,
+        fontSize: 12, // Reduce the font size
+        padding: 'px 8px', // Adjust the padding as needed
     },
-  }));
-  
+}));
   const StyledTableRow = styled(TableRow)(({ theme }) => ({
     '&:nth-of-type(odd)': {
       backgroundColor: theme.palette.action.hover,
@@ -121,7 +122,7 @@ function EmployTaskTable() {
                         <Table sx={{ minWidth: 700 }} aria-label="customized table">
                             <TableHead>
                                 <TableRow>
-                                    <StyledTableCell>Serial No</StyledTableCell>
+                                    <StyledTableCell>S.No</StyledTableCell>
                                     <StyledTableCell align="center">Task</StyledTableCell>
                                     <StyledTableCell align="center">Start Time</StyledTableCell>
                                     <StyledTableCell align="center">End Date</StyledTableCell>
