@@ -97,7 +97,7 @@ function EmployTaskTable() {
 
     const handleEditSubmit = async (values: any) => {
         try {
-            const response = await updateTask(selectedTask.Task_details_Id, values.Status, values.Remarks);
+            const response = await updateTask(selectedTask.Task_details_Id, values.Status, values.Remarks,values.Actual_Start_Date,values.Actual_Start_Time);
 console.log('hello');
 
             if (response.message === "Task updated successfully") {

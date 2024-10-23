@@ -111,10 +111,9 @@ const TaskDetails: React.FC<TaskDetailsProps> = () => {
               
               
               <Typography variant="body2">
-              Extend Start Date: {taskDetails?.taskDetails?.Extend_Start_Date || 'N/A'}
+              Actual Start Date: {taskDetails?.taskDetails?.Actual_Start_Date || 'N/A'}
               </Typography>
-              <Typography variant="body2">Extend Start Time: {taskDetails?.taskDetails?.Extend_Start_Time || 'N/A'}</Typography>
-
+              <Typography variant="body2"> Actual End Time: {taskDetails?.taskDetails?.Actual_Start_Time || 'N/A'}</Typography>
               <Typography variant="body2">Extend End Date: {taskDetails?.taskDetails?.Extend_End_Date  || 'N/A'}</Typography>
               <Typography variant="body2">Extend End Time:{taskDetails?.taskDetails?.Extend_End_Time  || 'N/A'}</Typography>
               <Typography variant="body2">Remarks:{taskDetails?.taskDetails?.Remarks  || 'N/A'}</Typography>

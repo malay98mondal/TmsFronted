@@ -63,7 +63,7 @@ export default function DataRenderLayoutAgent({ children }: any) {
                     onClick={handleDrawerToggle}
                     sx={{ ml: 2, alignItems: 'center', textAlign: 'right' }}
                 >
-                    <Button>Menu</Button>
+                    <MenuIcon sx={{color:'#29315a'}}/>
                 </IconButton>
                 <Drawer
                     anchor="left"

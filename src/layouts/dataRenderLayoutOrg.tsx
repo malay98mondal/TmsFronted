@@ -1,9 +1,9 @@
-import { Box, Grid } from "@mui/material";
+import { Box, Button, Drawer, Grid, IconButton } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import { useOrgContext } from "../utils/orgContext";
 import SideNavOrg from "./sideNavOrg";
 import { FaUsers } from 'react-icons/fa';
-
+import MenuIcon from '@mui/icons-material/Menu';
 export default function DataRenderLayoutOrg({ children }: any) {
 
     const navigationArray = [
@@ -59,6 +59,11 @@ export default function DataRenderLayoutOrg({ children }: any) {
             }
         };
     }, []);
+    const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
+
+    const handleDrawerToggle = () => {
+        setDrawerOpen(!drawerOpen);
+    };
 
     return (
         <Grid ref={containerRef} container sx={{ overflow: "auto", background: darkMode ? "#010101" : "#fff", height: '100vh' }}>
@@ -71,14 +76,40 @@ export default function DataRenderLayoutOrg({ children }: any) {
                     position: "sticky", // Sticky positioning for sidebar
                     top: 0, // Stick to the top of the viewport
                     height: '100vh', // Full height for sidebar
-                    zIndex: 1000, // Ensure it stays above the content
+                    zIndex: 1000,
+                     // Ensure it stays above the content
                 }}
             >
                 <SideNavOrg darkMode={darkMode} activeTab={activeTab} setActiveTab={setActiveTab} routes={navigationArray} showMiniNav={showMiniNav} setShowMiniNav={setShowMiniNav} />
             </Grid>
-
+            <Grid item xs={4} md={4} height={50}lg={0} sx={{display: {marginBottom:'-3em',xs: "block", lg: "none" } ,}}>
+                <IconButton
+                    edge="start"
+                    color="inherit"
+                    aria-label="menu"
+                    onClick={handleDrawerToggle}
+                    sx={{ ml: 2, alignItems: 'center', textAlign: 'right' }}
+                >
+                    <MenuIcon sx={{color:'#29315a'}}/>
+                    </IconButton>
+                <Drawer
+                    anchor="left"
+                    open={drawerOpen}
+                    onClose={handleDrawerToggle}
+                    sx={{ "& .MuiDrawer-paper": { boxSizing: "border-box", width: 250, mt: 6 } }}
+                >
+                    <SideNavOrg
+                        darkMode={darkMode}
+                        activeTab={activeTab}
+                        setActiveTab={setActiveTab}
+                        routes={navigationArray}
+                        showMiniNav={showMiniNav}
+                        setShowMiniNav={setShowMiniNav}
+                    />
+                </Drawer>
+            </Grid>
             {/* Main content */}
-            <Grid item xs={12} md={12} lg={9.5} m={0} p={0}>
+            <Grid item xs={12} md={12} lg={9.5} sx={{marginTop:''}}m={0} p={0}>
                 {children}
             </Grid>
         </Grid>
