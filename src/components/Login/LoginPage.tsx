@@ -54,7 +54,7 @@ const Login: React.FC = () => {
       Cookies.remove(teamLeadCookies);
     } else if (Cookies.get(memberCookiers)) {
       Cookies.remove(memberCookiers);
-    } 
+    }
   };
 
   function clearCookies() {
@@ -79,7 +79,7 @@ const Login: React.FC = () => {
       } else if (data.type === 3) {
         Cookies.set(memberCookiers, data?.access_token);
         setTimeout(() => window.location.href = '/employee-task/EmployTask', 1500);
-      } 
+      }
       setSnackbarMessage('Login successful! Redirecting...');
       setSnackbarSeverity('success');
       setSnackbarOpen(true);
@@ -107,72 +107,88 @@ const Login: React.FC = () => {
   };
 
   return (
-    <Grid container style={{ height: '100%'}}>
-        <Grid item xs={12} sm={6} md={6} display="flex" justifyContent="center" alignItems="center" sx={{padding:"4em"}}>
-          <StyledPaper elevation={3}>
-            <Typography variant="h5" align="center" sx={{ marginBottom: 2 }}>
-              Login
-            </Typography>
-            <form onSubmit={handleSubmit}>
-              <TextField
-                variant="outlined"
-                margin="normal"
-                required
-                fullWidth
-                id="email"
-                label="Email Address"
-                name="email"
-                autoComplete="email"
-                autoFocus
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-              <TextField
-                variant="outlined"
-                margin="normal"
-                required
-                fullWidth
-                name="password"
-                label="Password"
-                type="password"
-                id="password"
-                autoComplete="current-password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                color="primary"
-                disabled={loading}
-                sx={{ marginTop: 2 }}
-              >
-                {loading ? <CircularProgress size={24} /> : 'Login'}
-              </Button>
-            </form>
-          </StyledPaper>
-          <Snackbar
-            open={snackbarOpen}
-            autoHideDuration={6000}
-            onClose={handleCloseSnackbar}
-          >
-            <Alert
-              onClose={handleCloseSnackbar}
-              severity={snackbarSeverity}
-              sx={{ width: '100%' }}
+    <Grid container style={{ height: '100%' }}>
+      <Grid item xs={12} sm={6} md={6} display="flex" justifyContent="center" alignItems="center" sx={{ padding: "4em" }}>
+        <StyledPaper elevation={3}>
+          <Typography variant="h5" align="center" sx={{ marginBottom: 2 }}>
+            Login
+          </Typography>
+          <form onSubmit={handleSubmit}>
+          <TextField
+  variant="outlined"
+  margin="normal"
+  required
+  fullWidth
+  id="email"
+  label="Email Address"
+  name="email"
+  autoComplete="email"
+  autoFocus
+  value={email}
+  onChange={(e) => setEmail(e.target.value)}
+  placeholder="Enter your email"
+  InputLabelProps={{
+    shrink: true, // This forces the label to shrink at all times
+  }}
+  InputProps={{
+    value: email, // Ensures correct input value handling
+  }}
+/>
+
+<TextField
+  variant="outlined"
+  margin="normal"
+  required
+  fullWidth
+  name="password"
+  label="Password"
+  type="password"
+  id="password"
+  autoComplete="current-password"
+  value={password}
+  onChange={(e) => setPassword(e.target.value)}
+  placeholder="Enter your password"
+  InputLabelProps={{
+    shrink: true, // Always shrink the label
+  }}
+  InputProps={{
+    value: password, // Ensures correct input value handling
+  }}
+/>
+
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              color="primary"
+              disabled={loading}
+              sx={{ marginTop: 2 }}
             >
-              {snackbarMessage}
-            </Alert>
-          </Snackbar>
-        </Grid>
-        <Grid item xs={12} sm={6} md={6} sx={{padding:'5em'}}>
-          <StyledImage
-            src="../../../src/utils/signup 1.png" // Replace with your image path
-            alt="Login Illustration"
-          />
-        </Grid>
+              {loading ? <CircularProgress size={24} /> : 'Login'}
+            </Button>
+          </form>
+        </StyledPaper>
+        <Snackbar
+          open={snackbarOpen}
+          autoHideDuration={6000}
+          onClose={handleCloseSnackbar}
+        >
+          <Alert
+            onClose={handleCloseSnackbar}
+            severity={snackbarSeverity}
+            sx={{ width: '100%' }}
+          >
+            {snackbarMessage}
+          </Alert>
+        </Snackbar>
       </Grid>
+      <Grid item xs={12} sm={6} md={6} sx={{ padding: '5em' }}>
+        <StyledImage
+          src="../../../src/utils/signup 1.png" // Replace with your image path
+          alt="Login Illustration"
+        />
+      </Grid>
+    </Grid>
   );
 };
 

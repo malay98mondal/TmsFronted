@@ -89,13 +89,15 @@ export const getProjectEmployees = async (projectId: number) => {
 };
 
 
-  export const updateTask = async (taskId: number, status: string, remarks: string) => {
+  export const updateTask = async (taskId: number, status: string, remarks: string, Actual_Start_Date: any, Actual_Start_Time: any) => {
     const token = Cookies.get(memberCookiers);  // Retrieve the token from the cookie
 
     try {
         const response = await axios.put(`${API_URL}/EmployeTaskRoute/UpdateTask/${taskId}`, {
             Status: status,
             Remarks: remarks,
+            Actual_Start_Date:Actual_Start_Date,
+            Actual_Start_Time:Actual_Start_Time,
         }, 
         {
             headers: {
