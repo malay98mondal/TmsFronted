@@ -4,26 +4,30 @@ import { API_URL, managerCookies, memberCookiers, teamLeadCookies } from '../Con
 
 
 
-export const getTasksByEmployeeId = async (search: string, page: number, limit: number) => {
+export const getTasksByEmployeeId = async (search: string, page: number, limit: number, showWarningDialog: (msg: string) => void) => {
   const token = Cookies.get(teamLeadCookies);
   try {
     const response = await axios.get(`${API_URL}/TaskRoutes/tasks`, {
       params: {
-        search,  // Include the search term
-        page,    // Include the current page
-        limit    // Include the number of tasks per page
+        search,
+        page,
+        limit,
       },
       headers: {
-        Authorization: `Bearer ${token}`,  // Include the token in the Authorization header
+        Authorization: `Bearer ${token}`,
       },
     });
-    return response.data; // This will return { ProjectName, Tasks }
+    return response.data; // Return your data
   } catch (error) {
-    console.error('Error fetching tasks:', error);
-    throw error; // You can throw the error to handle it in your component
+    const status = error.response?.status;
+    if (status === 401) {
+      showWarningDialog("Your session has expired. Please log in again.");
+    } else {
+      showWarningDialog("An error occurred while fetching tasks.");
+    }
+    throw error; // Rethrow the error to be handled by the caller
   }
 };
-
 
 export const createTask = async (taskData: any) => {
   const token = Cookies.get(teamLeadCookies);
@@ -39,7 +43,7 @@ export const createTask = async (taskData: any) => {
   }
 };
 
-export const getProjectEmployees = async (projectId: number) => {
+export const getProjectEmployees = async (projectId: number, search: string = '', limit: number = 10, offset: number = 0) => {
   const token = Cookies.get(teamLeadCookies);
 
   try {
@@ -47,6 +51,11 @@ export const getProjectEmployees = async (projectId: number) => {
       headers: {
         Authorization: `Bearer ${token}`,  // Include the token in the Authorization header
       },
+      params: {
+        search,  // Add search term as a query parameter
+        limit,   // Add limit as a query parameter
+        offset,  // Add offset for pagination as a query parameter
+      }
     });
     return response.data; // Return the data from the response
   } catch (error) {
@@ -54,6 +63,7 @@ export const getProjectEmployees = async (projectId: number) => {
     throw error; // Rethrow the error for further handling
   }
 };
+
 
   export const importTasks = async ( projectId: string, file: File) => {
     const formData = new FormData();
@@ -109,4 +119,20 @@ export const getProjectEmployees = async (projectId: number) => {
     } catch (error: any) {
         throw new Error(error.response?.data?.message || 'Error updating task');
     }
+};
+
+export const updateTaskTeamLead = async (taskId: string, taskData: any) => {
+  const token = Cookies.get(teamLeadCookies);  // Retrieve the token from the cookie
+
+  try {
+    const response = await axios.patch(`${API_URL}/TaskRoutes/UpdateTask/${taskId}`, taskData, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Assuming token is required for authorization
+        'Content-Type': 'application/json',
+      },
+    });
+    return response.data;
+  } catch (error: any) {
+    throw new Error(error.response.data.message || 'Error updating task');
+  }
 };
