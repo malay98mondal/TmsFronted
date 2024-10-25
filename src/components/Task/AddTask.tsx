@@ -10,7 +10,8 @@ import {
     Select,
     FormControl,
     InputLabel,
-    FormHelperText
+    FormHelperText,
+    Autocomplete
 } from '@mui/material';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
@@ -61,7 +62,7 @@ const validationSchema = Yup.object({
             selectedTime.setMinutes(parseInt(value.split(':')[1], 10));
             return selectedTime >= now; // Ensure Start Time is today or in the future
         }),
-        Assigned_Emp_Id: Yup.number().required('Assigned employe is required'), // Assuming it's nullable, adjust as needed
+    Assigned_Emp_Id: Yup.number().required('Assigned employe is required'), // Assuming it's nullable, adjust as needed
 
     End_Time: Yup.string()
         .matches(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, 'Invalid time format')
@@ -152,11 +153,16 @@ const AddTaskForm: React.FC<AddTaskFormProps> = ({ open, onClose, projectId, fet
     const [employees, setEmployees] = useState<Employee[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+    const [searchTerm, setSearchTerm] = useState(''); // State for search input
+    const [currentPage, setCurrentPage] = useState(0); // State for pagination
+    const [page, setPage] = useState(0); // For pagination
+
 
     useEffect(() => {
         const fetchEmployees = async () => {
+            setLoading(true); // Set loading before fetching
             try {
-                const data = await getProjectEmployees(projectId);
+                const data = await getProjectEmployees(projectId, searchTerm, 10, page); // Fetch based on search and page
                 setEmployees(data);
             } catch (err) {
                 setError('Failed to fetch project employees.');
@@ -169,7 +175,7 @@ const AddTaskForm: React.FC<AddTaskFormProps> = ({ open, onClose, projectId, fet
         if (open) { // Only fetch when the dialog is open
             fetchEmployees();
         }
-    }, [open, projectId]); // Ensure dependency on projectId for changes
+    }, [open, projectId, searchTerm, currentPage]); // Ensure dependency on projectId for changes
 
     return (
         <Dialog open={open} onClose={onClose}>
@@ -268,27 +274,41 @@ const AddTaskForm: React.FC<AddTaskFormProps> = ({ open, onClose, projectId, fet
                         }}
                     />
 
-                    {/* Employee Assignment Dropdown */}
                     <FormControl fullWidth margin="dense" error={formik.touched.Assigned_Emp_Id && Boolean(formik.errors.Assigned_Emp_Id)}>
-                        <InputLabel id="assigned-emp-id-label">Assigned Employee</InputLabel>
-                        <Select
-                            labelId="assigned-emp-id-label"
-                            name="Assigned_Emp_Id"
-                            value={formik.values.Assigned_Emp_Id || ''}
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            fullWidth
-                            label="Assigned Employee"
-                        >
-                            <MenuItem value="">
-                                <em>None</em>
-                            </MenuItem>
-                            {employees.map((employee) => (
-                                <MenuItem key={employee.Emp_Id} value={employee.Emp_Id}>
-                                    {employee.Employee.Employee_name} {/* Assuming employee has a 'Name' field */}
-                                </MenuItem>
-                            ))}
-                        </Select>
+                        <Autocomplete
+                            options={employees}
+                            getOptionLabel={(option) => option.Employee.Employee_name} // Adjust according to your employee structure
+                            onChange={(event, newValue) => {
+                                formik.setFieldValue('Assigned_Emp_Id', newValue ? newValue.Emp_Id : ''); // Set the value to Formik
+                            }}
+                            onInputChange={(event, value) => {
+                                setSearchTerm(value); // Update search term based on input
+                                setPage(0); // Reset to the first page on new search
+                                setEmployees([]); // Clear previous results on new search
+                            }}
+                            onScroll={(event) => {
+                                const target = event.target as HTMLElement; // Cast to HTMLElement
+                                const bottom = target.scrollHeight === target.scrollTop + target.clientHeight;
+                                if (bottom && !loading) {
+                                    setPage((prev) => prev + 1); // Load more when scrolled to bottom
+                                }
+                            }}
+                            renderInput={(params) => (
+                                <TextField
+                                    {...params}
+                                    label="Assigned Employee"
+                                    variant="outlined"
+                                    error={formik.touched.Assigned_Emp_Id && Boolean(formik.errors.Assigned_Emp_Id)}
+                                />
+                            )}
+                            loading={loading} // Show loading indicator
+                            filterOptions={(options, { inputValue }) => {
+                                // You can filter the options based on inputValue if necessary
+                                return options.filter((option) =>
+                                    option.Employee.Employee_name.toLowerCase().includes(inputValue.toLowerCase())
+                                );
+                            }}
+                        />
                         <FormHelperText>
                             {formik.touched.Assigned_Emp_Id && formik.errors.Assigned_Emp_Id ? (
                                 typeof formik.errors.Assigned_Emp_Id === 'string' ? (
@@ -299,6 +319,7 @@ const AddTaskForm: React.FC<AddTaskFormProps> = ({ open, onClose, projectId, fet
                             ) : null}
                         </FormHelperText>
                     </FormControl>
+
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={onClose} color="secondary">

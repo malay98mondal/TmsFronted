@@ -25,7 +25,9 @@ import AddTaskForm from '../../components/Task/AddTask';
 import DataRenderLayoutOrg from '../../layouts/dataRenderLayoutOrg';
 import { importTasks } from '../../apiRequest/TaskRoutes/TaskRoutes';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-
+import EditIcon from '@mui/icons-material/Edit';
+import EditTaskForm from './EditTaskForm';
+import { useWarningDialog } from '../../middleware/dialogService';
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
       backgroundColor: '#f26729',
@@ -64,12 +66,15 @@ function TaskCreation() {
   const [totalTasks, setTotalTasks] = useState<number>(0); // Total tasks count
   const [tasksPerPage] = useState<number>(5); // Number of tasks per page
   const fileInputRef = useRef<HTMLInputElement | null>(null); // Reference for the hidden file input
+  const [selectedTask, setSelectedTask] = useState<any>(null); // State to store the task being edited
+  const [editOpen, setEditOpen] = useState(false); // For Edit Task Form
+  const { showWarningDialog, DialogComponent } = useWarningDialog();
 
 
 
   const fetchTasks = async () => {
     try {
-      const data = await getTasksByEmployeeId(searchTerm, currentPage, tasksPerPage);
+      const data = await getTasksByEmployeeId(searchTerm, currentPage, tasksPerPage,showWarningDialog);
       setTasks(data.tasks);
       setTotalTasks(data.total);
       setProjectId(data.projectId);
@@ -81,7 +86,7 @@ function TaskCreation() {
   useEffect(() => {
 
     fetchTasks();
-  }, [searchTerm, currentPage, tasksPerPage]); // Dependencies
+  }, [searchTerm, currentPage, tasksPerPage,100]); // Dependencies
 
   // Function to handle opening the Add Task Form dialog
   const handleClickOpen = () => {
@@ -94,6 +99,15 @@ function TaskCreation() {
   const handleClose = () => {
     console.log('Closing Add Task Form');
     setOpen(false); // Close the dialog
+  };
+
+  const handleEditClick = (task: any) => {
+    setSelectedTask(task); // Set the task to be edited
+    setEditOpen(true); // Open Edit Task Form
+  };  
+
+  const handleEditClose = () => {
+    setEditOpen(false); // Close Edit Task Form
   };
 
   // Handle file change
@@ -215,13 +229,17 @@ function TaskCreation() {
                     <StyledTableCell align="center">{task?.Task_Details}</StyledTableCell>
                     <StyledTableCell align="center">{task?.Status}</StyledTableCell>
                     <StyledTableCell style={{ textAlign: 'center' }}>
-                      <Tooltip title="View Details" placement="top">
                         <Button>
+                        <Tooltip title="View Details" placement="top">
+
                           <Link style={{ marginTop: '0.8em', marginRight: '0.8em' }} to={`/org-dashboard/task-table/task-details/${task.Task_details_Id}`} >
                             <VisibilityIcon />
                           </Link>
+                          </Tooltip>
+                          <Tooltip title="Edit" placement="top">
+                          <EditIcon onClick={() => handleEditClick(task)} />
+                          </Tooltip>
                         </Button>
-                      </Tooltip>
                     </StyledTableCell>
                   </StyledTableRow>
                 ))}
@@ -244,8 +262,18 @@ function TaskCreation() {
 
           {/* Add Task Form */}
           <AddTaskForm open={open} onClose={handleClose} fetchTasks={fetchTasks} projectId={projectId} />
+          {selectedTask && (
+        <EditTaskForm
+          open={editOpen}
+          onClose={handleEditClose}
+          task={selectedTask}
+          projectId={projectId}
+          fetchTasks={fetchTasks}
+        />
+      )}
         </Box>
       </Box>
+      {DialogComponent} 
     </DataRenderLayoutOrg>
   );
 }
