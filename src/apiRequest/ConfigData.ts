@@ -1,4 +1,4 @@
-const env: any = "dev";
+const env: any = "prod";
 
 export const API_URL = env === "dev" ? "http://localhost:5000/api/v1" : "https://app.manikanta.info/api/v1";
 
