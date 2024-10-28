@@ -32,14 +32,14 @@ export const getTasksByEmployeeId = async (search: string, page: number, limit: 
 export const createTask = async (taskData: any) => {
   const token = Cookies.get(teamLeadCookies);
   try {
-      const response = await axios.post(`${API_URL}/TaskRoutes/CreateTask`, taskData, {
-          headers: {
-              Authorization: `Bearer ${token}`,  // Include the token in the Authorization header
-          },
-      });
-      return response.data;
+    const response = await axios.post(`${API_URL}/TaskRoutes/CreateTask`, taskData, {
+      headers: {
+        Authorization: `Bearer ${token}`,  // Include the token in the Authorization header
+      },
+    });
+    return response.data;
   } catch (error: any) {
-      throw error.response?.data || 'Error creating task'; // Handle error appropriately
+    throw error.response?.data || 'Error creating task'; // Handle error appropriately
   }
 };
 
@@ -65,60 +65,60 @@ export const getProjectEmployees = async (projectId: number, search: string = ''
 };
 
 
-  export const importTasks = async ( projectId: string, file: File) => {
-    const formData = new FormData();
-    formData.append('file', file);
-    const token = Cookies.get(teamLeadCookies);
-    try { 
-      const response = await axios.post(`${API_URL}/TaskRoutes/importTasks/${projectId}`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      return response.data; // Return the response data
-    } catch (error: any) {
-      throw new Error(error.response?.data?.message || 'Error importing tasks'); // Handle errors
-    }
-  };
-
-
-  export const getTaskDetailsById = async (taskId: number) => {
-    const token = Cookies.get(teamLeadCookies);
-    try {
-        const response = await axios.get(`${API_URL}/TaskRoutes/task-details/${taskId}`, {
-            headers: {
-                Authorization: `Bearer ${token}`,  // Include the token in the Authorization header
-            },
-        });
-        return response.data;
-    } catch (error: any) {
-        console.error("Error fetching task details:", error);
-        throw error.response?.data || 'Error fetching task details';  // Handle error appropriately
-    }
+export const importTasks = async (projectId: string, file: File) => {
+  const formData = new FormData();
+  formData.append('file', file);
+  const token = Cookies.get(teamLeadCookies);
+  try {
+    const response = await axios.post(`${API_URL}/TaskRoutes/importTasks/${projectId}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data; // Return the response data
+  } catch (error: any) {
+    throw new Error(error.response?.data?.message || 'Error importing tasks'); // Handle errors
+  }
 };
 
 
-  export const updateTask = async (taskId: number, status: string, remarks: string, Actual_Start_Date: any, Actual_Start_Time: any) => {
-    const token = Cookies.get(memberCookiers);  // Retrieve the token from the cookie
+export const getTaskDetailsById = async (taskId: number) => {
+  const token = Cookies.get(teamLeadCookies);
+  try {
+    const response = await axios.get(`${API_URL}/TaskRoutes/task-details/${taskId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,  // Include the token in the Authorization header
+      },
+    });
+    return response.data;
+  } catch (error: any) {
+    console.error("Error fetching task details:", error);
+    throw error.response?.data || 'Error fetching task details';  // Handle error appropriately
+  }
+};
 
-    try {
-        const response = await axios.put(`${API_URL}/EmployeTaskRoute/UpdateTask/${taskId}`, {
-            Status: status,
-            Remarks: remarks,
-            Actual_Start_Date:Actual_Start_Date,
-            Actual_Start_Time:Actual_Start_Time,
-        }, 
-        {
-            headers: {
-                Authorization: `Bearer ${token}`,  // Send the token in the Authorization header
-            },
-        });
 
-        return response.data;
-    } catch (error: any) {
-        throw new Error(error.response?.data?.message || 'Error updating task');
-    }
+export const updateTask = async (taskId: number, status: string, remarks: string, Actual_Start_Date: any, Actual_Start_Time: any) => {
+  const token = Cookies.get(memberCookiers);  // Retrieve the token from the cookie
+
+  try {
+    const response = await axios.put(`${API_URL}/EmployeTaskRoute/UpdateTask/${taskId}`, {
+      Status: status,
+      Remarks: remarks,
+      Actual_Start_Date: Actual_Start_Date,
+      Actual_Start_Time: Actual_Start_Time,
+    },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,  // Send the token in the Authorization header
+        },
+      });
+
+    return response.data;
+  } catch (error: any) {
+    throw new Error(error.response?.data?.message || 'Error updating task');
+  }
 };
 
 export const updateTaskTeamLead = async (taskId: string, taskData: any) => {
@@ -134,5 +134,74 @@ export const updateTaskTeamLead = async (taskId: string, taskData: any) => {
     return response.data;
   } catch (error: any) {
     throw new Error(error.response.data.message || 'Error updating task');
+  }
+};
+
+
+export const getTeamLeadTask = async (
+  page: number,
+  limit: number,
+  search: string,
+  showWarningDialog: (msg: string) => void
+) => {
+  const token = Cookies.get(teamLeadCookies);
+  const url = `${API_URL}/TaskRoutes/assigned?page=${page}&limit=${limit}&search=${search}`;
+  console.log(`Fetching tasks from: ${url}`);
+
+  try {
+    const response = await axios.get(url, {
+      headers: {
+        Authorization: `Bearer ${token}`,  // Include the token in the Authorization header
+      },
+    });
+    return response.data;
+  } catch (error: any) {
+    const status = error.response?.status;
+
+    if (status === 401) {
+      showWarningDialog("Your session has expired. Please log in again.");
+    } else {
+      showWarningDialog("An error occurred while fetching tasks.");
+    }
+
+    throw error.response?.data || 'Error fetching tasks';
+  }
+};
+
+
+export const editTeamLeadOwnTask = async (
+  taskId: number,
+  status: string,
+  remarks: string,
+  Actual_Start_Date: any,
+  Actual_Start_Time: any,
+  showWarningDialog: (msg: string) => void
+) => {
+  const token = Cookies.get(teamLeadCookies);
+
+  try {
+    const response = await axios.put(`${API_URL}/TaskRoutes/UpdateTask/${taskId}`, {
+      Status: status,
+      Remarks: remarks,
+      Actual_Start_Date: Actual_Start_Date,
+      Actual_Start_Time: Actual_Start_Time,
+    },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,  // Send the token in the Authorization header
+        },
+      });
+
+    return response.data;
+  } catch (error: any) {
+    const status = error.response?.status;
+
+    if (status === 401) {
+      showWarningDialog("Your session has expired. Please log in again.");
+    } else {
+      showWarningDialog("An error occurred while updating the task.");
+    }
+
+    throw new Error(error.response?.data?.message || 'Error updating task');
   }
 };

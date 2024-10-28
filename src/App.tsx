@@ -25,6 +25,8 @@ const CompletedTask =React.lazy(()=>import('./components/EmployTask/EmployComple
 const EmployeeTable =React.lazy(()=>import('./components/Employee/EmployeTable'));
 const LoginPage =React.lazy(()=>import('./components/Login/LoginPage'));
 
+const TeamLeadTaskTable =React.lazy(()=>import('./components/Task/TeamLeadTaskTable'));
+
 function App() {
 
   const [darkMode, setDarkMode] = useState(false);
@@ -52,6 +54,7 @@ function App() {
       children: [
         { path: 'task-table', element: <React.Suspense fallback={<Box display="flex" justifyContent="center" alignItems="center" height="100%" width="100%" padding='2em'><CircularProgress /></Box>}><TaskCreation /></React.Suspense> },
         { path: 'task-table/task-details/:Task_details_Id', element: <React.Suspense fallback={<Box display="flex" justifyContent="center" alignItems="center" height="100%" width="100%" padding='2em'><CircularProgress /></Box>}><TaskDetails /></React.Suspense> },
+        { path: 'own-task', element: <React.Suspense fallback={<Box display="flex" justifyContent="center" alignItems="center" height="100%" width="100%" padding='2em'><CircularProgress /></Box>}><TeamLeadTaskTable /></React.Suspense> },
 
       ]
     },

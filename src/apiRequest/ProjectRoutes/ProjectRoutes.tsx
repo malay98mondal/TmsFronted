@@ -76,7 +76,7 @@ export const getProjectEmployees = async (
     }
 };
 
-export const getEmployees = async () => {
+export const getEmployees = async (page: number = 1, searchTerm: string = ''): Promise<any> => {
   const token = Cookies.get(managerCookies);
 
   try {
@@ -86,14 +86,19 @@ export const getEmployees = async () => {
         headers: {
           Authorization: `Bearer ${token}`,  // Include the token in the Authorization header
         },
+        params: {
+          page,          // Add the page parameter
+          searchTerm,    // Add the searchTerm parameter
+        },
       }
     );
     return response.data;
   } catch (error: any) {
+    // Enhanced error handling with logging
+    console.error("Error fetching employees:", error);
     throw new Error(error.response?.data?.message || 'Error fetching employees');
   }
 };
-
 
 
 

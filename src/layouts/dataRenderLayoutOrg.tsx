@@ -25,6 +25,27 @@ export default function DataRenderLayoutOrg({ children }: any) {
                     <FaUsers />
                 </Box>
             ),
+            
+        },
+        {
+            id: 2,
+            name: "Own Task",
+            path: "/org-dashboard/own-task",
+            icon: (
+                <Box
+                    sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        '&:hover svg': {
+                            color: 'white',
+                        },
+                    }}
+                >
+                    <FaUsers />
+                </Box>
+            ),
+            
         }
     ];
 
@@ -66,52 +87,95 @@ export default function DataRenderLayoutOrg({ children }: any) {
     };
 
     return (
-        <Grid ref={containerRef} container sx={{ overflow: "auto", background: darkMode ? "#010101" : "#fff", height: '100vh' }}>
-            {/* Sidebar container with sticky position */}
-            <Grid
-                item
-                xs={0} md={0} lg={2.5} m={0} p={0}
-                sx={{
-                    display: { xs: "none", md: "none", lg: "block" },
-                    position: "sticky", // Sticky positioning for sidebar
-                    top: 0, // Stick to the top of the viewport
-                    height: '100vh', // Full height for sidebar
-                    zIndex: 1000,
-                     // Ensure it stays above the content
-                }}
-            >
-                <SideNavOrg darkMode={darkMode} activeTab={activeTab} setActiveTab={setActiveTab} routes={navigationArray} showMiniNav={showMiniNav} setShowMiniNav={setShowMiniNav} />
-            </Grid>
-            <Grid item xs={4} md={4} height={50}lg={0} sx={{display: {marginBottom:'-3em',xs: "block", lg: "none" } ,}}>
-                <IconButton
-                    edge="start"
-                    color="inherit"
-                    aria-label="menu"
-                    onClick={handleDrawerToggle}
-                    sx={{ ml: 2, alignItems: 'center', textAlign: 'right' }}
-                >
-                    <MenuIcon sx={{color:'#29315a'}}/>
-                    </IconButton>
-                <Drawer
-                    anchor="left"
-                    open={drawerOpen}
-                    onClose={handleDrawerToggle}
-                    sx={{ "& .MuiDrawer-paper": { boxSizing: "border-box", width: 250, mt: 6 } }}
-                >
-                    <SideNavOrg
-                        darkMode={darkMode}
-                        activeTab={activeTab}
-                        setActiveTab={setActiveTab}
-                        routes={navigationArray}
-                        showMiniNav={showMiniNav}
-                        setShowMiniNav={setShowMiniNav}
-                    />
-                </Drawer>
-            </Grid>
-            {/* Main content */}
-            <Grid item xs={12} md={12} lg={9.5} sx={{marginTop:''}}m={0} p={0}>
-                {children}
-            </Grid>
+        <Grid
+        ref={containerRef}
+        container
+        sx={{
+          overflow: "auto",
+          background: darkMode ? "#010101" : "#fff",
+          height: '',
+        }}
+      >
+        {/* Sidebar container with sticky position */}
+        <Grid
+          item
+          xs={0}
+          md={0}
+          lg={2.5}
+          sx={{
+            display: { xs: "none", md: "none", lg: "block" },
+            position: "sticky",
+            top: 0,
+            height: '100vh',
+            zIndex: 1000,
+          }}
+        >
+          <SideNavOrg
+            darkMode={darkMode}
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+            routes={navigationArray}
+            showMiniNav={showMiniNav}
+            setShowMiniNav={setShowMiniNav}
+          />
         </Grid>
+      
+        {/* Menu icon for mobile view */}
+        <Grid
+          item
+          xs={4}
+          md={4}
+          lg={0}
+          sx={{
+            display: { xs: "block", lg: "none" },
+            mt: 2,  // Adds margin at the top for spacing
+      ml: 2,  
+      mb:5  
+          }}
+        >
+          <IconButton
+            edge="start"
+            color="inherit"
+            aria-label="menu"
+            onClick={handleDrawerToggle}
+            sx={{ ml: 2, alignItems: 'center' }}
+          >
+            <MenuIcon sx={{ color: '#29315a' }} />
+          </IconButton>
+          <Drawer
+            anchor="left"
+            open={drawerOpen}
+            onClose={handleDrawerToggle}
+            sx={{ "& .MuiDrawer-paper": { boxSizing: "border-box", width: 250, mt: 6 } }}
+          >
+            <SideNavOrg
+              darkMode={darkMode}
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+              routes={navigationArray}
+              showMiniNav={showMiniNav}
+              setShowMiniNav={setShowMiniNav}
+            />
+          </Drawer>
+        </Grid>
+      
+        {/* Main content */}
+        <Grid
+          item
+          xs={12}
+          md={12}
+          lg={9.5}
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'flex-start',
+            m: 0,
+            p: 0,
+          }}
+        >
+          {children}
+        </Grid>
+      </Grid>
+      
     );
 }
