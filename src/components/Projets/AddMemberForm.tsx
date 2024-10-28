@@ -8,15 +8,16 @@ import {
     Grid,
     FormControl,
     FormHelperText,
+    MenuItem,
 } from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete'; // Import Autocomplete
 import { useParams } from 'react-router-dom';
 import { addOrUpdateProjectEmployee, getEmployees } from '../../apiRequest/ProjectRoutes/ProjectRoutes';
 
 interface FormValues {
-    Emp_Id: number | null; 
-    Role_Id: number | null; 
-    Degesination: string; 
+    Emp_Id: number | null;
+    Role_Id: number | null;
+    Degesination: string;
 }
 
 const AddMemberForm = (props: any) => {
@@ -27,16 +28,16 @@ const AddMemberForm = (props: any) => {
         initialValues: {
             Emp_Id: null,
             Role_Id: null,
-            Degesination: '', 
+            Degesination: '',
         },
         validationSchema: Yup.object({
             Emp_Id: Yup.number().required('Employee is required'),
             Role_Id: Yup.number().required('Role is required'),
-            Degesination: Yup.string().required('Designation is required'), 
+            Degesination: Yup.string().required('Designation is required'),
         }),
         onSubmit: async (values) => {
             try {
-                const { Emp_Id, Role_Id, Degesination } = values; 
+                const { Emp_Id, Role_Id, Degesination } = values;
                 const response = await addOrUpdateProjectEmployee(Number(id), Number(Emp_Id), Number(Role_Id), Degesination);
                 console.log(response);
                 if (response && response.success) {
@@ -47,14 +48,14 @@ const AddMemberForm = (props: any) => {
                     formik.setFieldError('Emp_Id', response.message || 'Unexpected response format. Please try again.');
                 }
             } catch (error: any) {
-                console.error('Complete Error Object:', error);  
+                console.error('Complete Error Object:', error);
                 // Error handling logic here...
             }
         }
     });
 
     const [employees, setEmployees] = useState<any[]>([]);
-    const [designations, setDesignations] = useState<string[]>(['Developer', 'Tester','DB','Devops','BA']); 
+    const [designations, setDesignations] = useState<string[]>(['Developer', 'Tester', 'DB', 'Devops', 'BA']);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [page, setPage] = useState<number>(1);
@@ -67,7 +68,7 @@ const AddMemberForm = (props: any) => {
             setError(null);
             try {
                 const data = await getEmployees(page, searchTerm); // Fetch based on search term
-                setEmployees((prev) => [...prev, ...data.data]); 
+                setEmployees((prev) => [...prev, ...data.data]);
                 setHasMore(data.data.length > 0);
             } catch (err) {
                 setError(err.message);
@@ -127,37 +128,38 @@ const AddMemberForm = (props: any) => {
                         <TextField
                             select
                             label="Role"
-                            id="Role_Id" 
-                            name="Role_Id" 
-                            value={formik.values.Role_Id || ''} 
+                            id="Role_Id"
+                            name="Role_Id"
+                            value={formik.values.Role_Id || ''}
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
                             error={formik.touched.Role_Id && Boolean(formik.errors.Role_Id)}
                         >
-                            <option value={2}>Team Lead</option>
-                            <option value={3}>Member</option>
+                            <MenuItem value={2}>Team Lead</MenuItem>
+                            <MenuItem value={3}>Member</MenuItem>
                         </TextField>
                         <FormHelperText error={formik.touched.Role_Id && Boolean(formik.errors.Role_Id)}>
                             {formik.touched.Role_Id && formik.errors.Role_Id}
                         </FormHelperText>
                     </FormControl>
                 </Grid>
+
                 <Grid item xs={12}>
                     <FormControl fullWidth size="small">
                         <TextField
                             select
                             label="Designation"
-                            id="Degesination" 
-                            name="Degesination" 
-                            value={formik.values.Degesination || ''} 
+                            id="Degesination"
+                            name="Degesination"
+                            value={formik.values.Degesination || ''}
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
                             error={formik.touched.Degesination && Boolean(formik.errors.Degesination)}
                         >
                             {designations.map((designation, index) => (
-                                <option key={index} value={designation}>
+                                <MenuItem key={index} value={designation}>
                                     {designation}
-                                </option>
+                                </MenuItem>
                             ))}
                         </TextField>
                         {formik.touched.Degesination && formik.errors.Degesination && (
@@ -165,6 +167,7 @@ const AddMemberForm = (props: any) => {
                         )}
                     </FormControl>
                 </Grid>
+
                 <Grid item xs={12}>
                     <Button color="primary" variant="contained" type="submit">
                         Register
