@@ -1,48 +1,49 @@
-import { Avatar, Box, Button, Tooltip, Typography, styled, InputBase } from "@mui/material";
-import SearchIcon from '@mui/icons-material/Search';
+import { Avatar, Box, Tooltip, Typography, styled, IconButton, Button } from "@mui/material";
+import { useState } from "react";
+import Cookies from 'js-cookie';
+import LogoutDialog from "../../middleware/LogoutDialog";
 
 const NavbarContainer = styled(Box)({
-  display: 'flex',
-  height: '8vh',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  background: '#29315a',
-  padding: '0 2rem',
-  boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
+  display: "flex",
+  height: "8vh",
+  alignItems: "center",
+  justifyContent: "space-between",
+  background: "#29315a",
+  padding: "0 2rem",
+  boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
 });
 
 const Logo = styled(Typography)({
-  fontSize: '24px',
-  color: 'white',
-  fontWeight: 'bold',
-  textTransform: 'uppercase',
-});
-
-
-const StyledInput = styled(InputBase)({
-  color: 'white',
-  marginLeft: '0.5rem',
-  '& .MuiInputBase-input': {
-    padding: '0.5rem',
-    color: 'white',
-  },
-  '& .MuiInputBase-input::placeholder': {
-    color: '#B0B0B0',
-  },
+  fontSize: "24px",
+  color: "white",
+  fontWeight: "bold",
+  textTransform: "uppercase",
 });
 
 const Navbar = () => {
+  const [openLogoutDialog, setOpenLogoutDialog] = useState(false);
+
+  const handleLogout = () => {
+    // Replace this with your cookie removal logic
+    Cookies.remove('employeeCookies');
+    window.location.href = '/login'; // Redirect to login after logout
+  };
+
   return (
     <NavbarContainer>
-      {/* Logo */}
-      <Logo variant="h6">Employe</Logo>
+      <Logo variant="h6">Employee</Logo>
 
-      
-
-      {/* User Avatar */}
-      <Tooltip title="User Profile">
-        <Avatar sx={{ width: 35, height: 35 }} />
-      </Tooltip>
+        <Tooltip title="Logout">
+          <Button variant="contained" color="secondary" onClick={() => setOpenLogoutDialog(true)}>
+          Logout
+          </Button>
+        </Tooltip>
+ 
+      <LogoutDialog
+        open={openLogoutDialog}
+        onClose={() => setOpenLogoutDialog(false)}
+        onConfirm={handleLogout}
+      />
     </NavbarContainer>
   );
 };

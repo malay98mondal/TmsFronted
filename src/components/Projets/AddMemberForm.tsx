@@ -37,19 +37,45 @@ const AddMemberForm = (props: any) => {
         }),
         onSubmit: async (values) => {
             try {
-                const { Emp_Id, Role_Id, Degesination } = values;
-                const response = await addOrUpdateProjectEmployee(Number(id), Number(Emp_Id), Number(Role_Id), Degesination);
-                console.log(response);
+                const { Emp_Id, Role_Id, Degesination } = values; // Destructure Degesination
+                const response = await addOrUpdateProjectEmployee(Number(id), Number(Emp_Id), Number(Role_Id), Degesination); // Include Degesination in the API call
+                console.log(response)
+                // Check if the response indicates success
                 if (response && response.success) {
-                    console.log('Success:', response.message);
+                    console.log('Success:', response.message); // Log success message
                     fetchEmployees();
                     onClose();
                 } else {
+                    // Handle unexpected successful responses (if any)
                     formik.setFieldError('Emp_Id', response.message || 'Unexpected response format. Please try again.');
                 }
             } catch (error: any) {
-                console.error('Complete Error Object:', error);
-                // Error handling logic here...
+                console.error('Complete Error Object:', error);  // Log the complete error for debugging
+
+                // General error handling based on the error object
+                if (error.status === 409) {
+                    // Check for specific conflict messages
+                    if (error.data && error.data.message) {
+                        const message = error.data.message;
+
+                        if (message.includes('A team lead for the designation')) {
+                            formik.setFieldError('Role_Id', message); // Set error on Role_Id for this specific case
+                        } else if (message.includes('Employee is already assigned to this project.')) {
+                            formik.setFieldError('Emp_Id', message); // Set error on Emp_Id for this specific case
+                        } else {
+                            // Handle other conflict messages generically
+                            formik.setFieldError('Emp_Id', message || 'An error occurred.');
+                        }
+                    }
+                } else {
+                    // Handle other error messages sent by the backend
+                    if (error.data && error.data.message) {
+                        formik.setFieldError('Emp_Id', error.data.message || 'An error occurred.');
+                    } else {
+                        // Fallback for unexpected errors
+                        formik.setFieldError('Emp_Id', 'An unexpected error occurred. Please try again.');
+                    }
+                }
             }
         }
     });
@@ -101,7 +127,10 @@ const AddMemberForm = (props: any) => {
                         onChange={(event, value) => {
                             formik.setFieldValue('Emp_Id', value ? value.Emp_Id : null);
                         }}
-                        onBlur={formik.handleBlur}
+                        onBlur={(event) => {
+                            formik.handleBlur(event); // Call Formik's handleBlur
+                            formik.setFieldTouched('Emp_Id', true); // Mark Emp_Id as touched
+                        }}
                         onInputChange={(event, value) => {
                             setSearchTerm(value); // Update search term on input change
                             setEmployees([]); // Clear employees on new search
@@ -123,6 +152,7 @@ const AddMemberForm = (props: any) => {
                         }}
                     />
                 </Grid>
+
                 <Grid item xs={12} sm={6}>
                     <FormControl fullWidth size="small">
                         <TextField
