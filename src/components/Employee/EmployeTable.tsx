@@ -27,6 +27,7 @@ import { styled } from '@mui/material/styles';
 import { tableCellClasses } from '@mui/material/TableCell';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
+import { useWarningDialog } from '../../middleware/dialogService';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -58,10 +59,11 @@ function EmployeeTable() {
   const [totalEmployees, setTotalEmployees] = useState(0);
   const [search, setSearch] = useState('');
   const pageSize = 5; // Define page size
+  const { showWarningDialog, DialogComponent } = useWarningDialog();
 
   const getProjects = async () => {
     try {
-      const data = await getEmployees1(currentPage, pageSize, search);
+      const data = await getEmployees1(showWarningDialog,currentPage, pageSize, search);
       setEmployees(data.data);
       setTotalPages(data.totalPages);
       setTotalEmployees(data.total);
@@ -95,7 +97,7 @@ function EmployeeTable() {
           password: values.password,
         };
 
-        await addEmployee(employeeData);
+        await addEmployee(showWarningDialog,employeeData);
         getProjects();
         setOpenDialog(false);
         formik.resetForm();
@@ -283,6 +285,7 @@ function EmployeeTable() {
           </Box>
         </Box>
       </Box>
+      {DialogComponent} 
     </DataRenderLayoutAdmin>
   );
 }

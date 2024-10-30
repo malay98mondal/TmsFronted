@@ -13,6 +13,7 @@ import { Link } from 'react-router-dom';
 import AddProjectForm from './AddProjectForm';
 import { fetchProjects, addProject } from '../../apiRequest/ProjectRoutes/ProjectRoutes';
 import DataRenderLayoutAdmin from '../../layouts/dataRenderLayoutAdmin';
+import { useWarningDialog } from '../../middleware/dialogService';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -44,11 +45,12 @@ function ProjectTable() {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(5);
   const [totalPages, setTotalPages] = useState(1);
+  const { showWarningDialog, DialogComponent } = useWarningDialog();
 
   const getProjects = async (page = 1, search = '') => {
     setLoading(true);
     try {
-      const data = await fetchProjects(page, pageSize, search);
+      const data = await fetchProjects(showWarningDialog,page, pageSize, search);
       if (data.success) {
         setProjects(data.data);
         setTotalPages(data.pagination.totalPages);
@@ -73,7 +75,7 @@ function ProjectTable() {
         Status: values.Status,
       };
 
-      const newProject = await addProject(projectData);
+      const newProject = await addProject(showWarningDialog,projectData);
       getProjects(currentPage, searchTerm); // Fetch projects again after adding new project
     } catch (error) {
       console.error("Error adding project:", error);
@@ -194,6 +196,8 @@ function ProjectTable() {
 
         </Box>
       </Box>
+      {DialogComponent} 
+
     </DataRenderLayoutAdmin>
   );
 }

@@ -198,10 +198,7 @@ export const editTeamLeadOwnTask = async (
 
     if (status === 401) {
       showWarningDialog("Your session has expired. Please log in again.");
-    } else {
-      showWarningDialog("An error occurred while updating the task.");
-    }
-
+    } 
     throw new Error(error.response?.data?.message || 'Error updating task');
   }
 };

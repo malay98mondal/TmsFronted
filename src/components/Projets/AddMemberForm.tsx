@@ -13,6 +13,7 @@ import {
 import Autocomplete from '@mui/material/Autocomplete'; // Import Autocomplete
 import { useParams } from 'react-router-dom';
 import { addOrUpdateProjectEmployee, getEmployees } from '../../apiRequest/ProjectRoutes/ProjectRoutes';
+import { useWarningDialog } from '../../middleware/dialogService';
 
 interface FormValues {
     Emp_Id: number | null;
@@ -23,6 +24,7 @@ interface FormValues {
 const AddMemberForm = (props: any) => {
     const { fetchEmployees, onClose } = props;
     const { id } = useParams();
+    const { showWarningDialog, DialogComponent } = useWarningDialog();
 
     const formik = useFormik<FormValues>({
         initialValues: {
@@ -38,7 +40,7 @@ const AddMemberForm = (props: any) => {
         onSubmit: async (values) => {
             try {
                 const { Emp_Id, Role_Id, Degesination } = values; // Destructure Degesination
-                const response = await addOrUpdateProjectEmployee(Number(id), Number(Emp_Id), Number(Role_Id), Degesination); // Include Degesination in the API call
+                const response = await addOrUpdateProjectEmployee(showWarningDialog,Number(id), Number(Emp_Id), Number(Role_Id), Degesination,); // Include Degesination in the API call
                 console.log(response)
                 // Check if the response indicates success
                 if (response && response.success) {
@@ -93,7 +95,7 @@ const AddMemberForm = (props: any) => {
             setLoading(true);
             setError(null);
             try {
-                const data = await getEmployees(page, searchTerm); // Fetch based on search term
+                const data = await getEmployees(showWarningDialog,page, searchTerm); // Fetch based on search term
                 setEmployees((prev) => [...prev, ...data.data]);
                 setHasMore(data.data.length > 0);
             } catch (err) {
@@ -203,6 +205,7 @@ const AddMemberForm = (props: any) => {
                         Register
                     </Button>
                 </Grid>
+                {DialogComponent} 
             </Grid>
         </Box>
     );

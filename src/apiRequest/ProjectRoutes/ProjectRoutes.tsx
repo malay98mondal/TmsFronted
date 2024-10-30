@@ -4,7 +4,8 @@ import { API_URL, managerCookies } from '../ConfigData';
 
 
 // Function to fetch projects from backend
-export const fetchProjects = async (page: number, pageSize: number, search: string) => {
+export const fetchProjects = async (  showWarningDialog: (msg: string) => void
+,page: number, pageSize: number, search: string) => {
   const token = Cookies.get(managerCookies);
   
   try {
@@ -20,8 +21,12 @@ export const fetchProjects = async (page: number, pageSize: number, search: stri
     });
     return response.data;  // Assuming the data contains `success` and `data`
   } catch (error: any) {
-    console.error("Failed to fetch projects", error);
-    throw new Error(error.response?.data?.message || 'Error fetching projects');
+    const status = error.response?.status;
+
+    if (status === 401) {
+      showWarningDialog("Your session has expired. Please log in again.");
+    } 
+    throw new Error(error.response?.data?.message || 'Error updating task');
   }
 };
 
@@ -33,7 +38,8 @@ export const getProjectEmployees = async (
   projectId: number,
   page: number ,      
   pageSize: number ,  
-  search: string     
+  search: string  ,
+  showWarningDialog: (msg: string) => void   
 ) => {
   const token = Cookies.get(managerCookies);
   
@@ -53,12 +59,18 @@ export const getProjectEmployees = async (
     );
     return response.data;
   } catch (error: any) {
-    throw new Error(error.response?.data?.message || 'Error fetching project employees');
+    const status = error.response?.status;
+
+    if (status === 401) {
+      showWarningDialog("Your session has expired. Please log in again.");
+    } 
+    throw new Error(error.response?.data?.message || 'Error updating task');
   }
 };
 
 
-  export const getEmployees1 = async (page: number, limit: number, search: string) => {
+  export const getEmployees1 = async (  showWarningDialog: (msg: string) => void
+,  page: number, limit: number, search: string) => {
     const token = Cookies.get(managerCookies);
 
     try {
@@ -72,11 +84,17 @@ export const getProjectEmployees = async (
       );
       return response.data; // Ensure this returns the data you expect (employee list, total pages, etc.)
     } catch (error: any) {
-      throw new Error(error.response?.data?.message || 'Error fetching employees');
+      const status = error.response?.status;
+  
+      if (status === 401) {
+        showWarningDialog("Your session has expired. Please log in again.");
+      } 
+      throw new Error(error.response?.data?.message || 'Error updating task');
     }
-};
+  };
 
-export const getEmployees = async (page: number = 1, searchTerm: string = ''): Promise<any> => {
+export const getEmployees = async (  showWarningDialog: (msg: string) => void
+,page: number = 1, searchTerm: string = ''): Promise<any> => {
   const token = Cookies.get(managerCookies);
 
   try {
@@ -94,9 +112,12 @@ export const getEmployees = async (page: number = 1, searchTerm: string = ''): P
     );
     return response.data;
   } catch (error: any) {
-    // Enhanced error handling with logging
-    console.error("Error fetching employees:", error);
-    throw new Error(error.response?.data?.message || 'Error fetching employees');
+    const status = error.response?.status;
+
+    if (status === 401) {
+      showWarningDialog("Your session has expired. Please log in again.");
+    }
+    throw new Error(error.response?.data?.message || 'Error updating task');
   }
 };
 
@@ -105,7 +126,7 @@ export const getEmployees = async (page: number = 1, searchTerm: string = ''): P
 
 
 // Function to add or update project employee
-export const addOrUpdateProjectEmployee = async (projectId: number, empId: number, roleId: number, Degesination: string) => {
+export const addOrUpdateProjectEmployee = async (  showWarningDialog: (msg: string) => void ,projectId: number, empId: number, roleId: number, Degesination: string) => {
 
     try {
         const response = await axios.post(`${API_URL}/ProjectEmployee/${projectId}`, {
@@ -120,18 +141,56 @@ export const addOrUpdateProjectEmployee = async (projectId: number, empId: numbe
         });
         return response.data; // Return the response data
     } catch (error: any) {
-        // Instead of creating a new Error, just rethrow the original error for better handling
-        if (error.response) {
-            throw error.response; // Pass the response object if available
-        } else {
-            throw new Error('Failed to add or update project employee');
-        }
+      const status = error.response?.status;
+  
+      if (status === 401) {
+        showWarningDialog("Your session has expired. Please log in again.");
+      } 
+  
+      throw new Error(error.response?.data?.message || 'Error updating task');
     }
+  };
+
+
+
+
+export const patchProjectEmployee = async (
+  showWarningDialog: (msg: string) => void,
+  projectId: number,
+  projectMemberId: number,
+  data: {
+    Emp_Id: number;
+    Role_Id: number;
+    Degesination: string;
+ }
+) => {
+  try {
+    const token = Cookies.get(managerCookies);
+
+    const response = await axios.put(
+      `${API_URL}/ProjectEmployee/${projectId}/${projectMemberId}`,
+      data,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,  // Include the token in the Authorization header
+        },
+      }
+    );
+    return response.data;
+  } catch (error: any) {
+    const status = error.response?.status;
+
+    if (status === 401) {
+      showWarningDialog("Your session has expired. Please log in again.");
+    } 
+    throw new Error(error.response?.data?.message || 'Error updating task');
+  }
 };
 
 
 
-export const addEmployee = async (employeeData: { Employee_name: string,email:string,password:string }) => {
+export const addEmployee = async (  showWarningDialog: (msg: string) => void
+,employeeData: { Employee_name: string,email:string,password:string }) => {
     const token = Cookies.get(managerCookies);
     try {
       const response = await axios.post(
@@ -145,11 +204,18 @@ export const addEmployee = async (employeeData: { Employee_name: string,email:st
       );
       return response.data;
     } catch (error: any) {
-      throw new Error(error.response?.data?.message || 'Failed to create employee');
+      const status = error.response?.status;
+  
+      if (status === 401) {
+        showWarningDialog("Your session has expired. Please log in again.");
+      }
+  
+      throw new Error(error.response?.data?.message || 'Error updating member');
     }
   };
 
-  export const addProject = async (projectData: { Project_Name: string; Status: string }) => {
+  export const addProject = async (  showWarningDialog: (msg: string) => void,
+  projectData: { Project_Name: string; Status: string }) => {
     const token = Cookies.get(managerCookies);
 
     try {
@@ -164,7 +230,12 @@ export const addEmployee = async (employeeData: { Employee_name: string,email:st
       );
       return response.data;
     } catch (error: any) {
-      console.error("Error adding project:", error);
-      throw new Error(error.response?.data?.message || 'Error adding project');
+      const status = error.response?.status;
+  
+      if (status === 401) {
+        showWarningDialog("Your session has expired. Please log in again.");
+      } 
+  
+      throw new Error(error.response?.data?.message || 'Error adding task');
     }
   };
