@@ -9,9 +9,11 @@ import {
 import { MdEdit, MdDelete } from "react-icons/md";
 import { useParams } from 'react-router-dom';
 import { AddUserButton, SearchField, StyledToolbar } from '../SuperAdmin/styles';
-import { getProjectEmployees } from '../../apiRequest/ProjectRoutes/ProjectRoutes';
+import { getProjectEmployees, patchProjectEmployee } from '../../apiRequest/ProjectRoutes/ProjectRoutes';
 import AddMemberDialog from './AddMemberDialog';
 import DataRenderLayoutAdmin from '../../layouts/dataRenderLayoutAdmin';
+import { useWarningDialog } from '../../middleware/dialogService';
+import EditMemberDialog from './EditMemberDialog';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -44,7 +46,10 @@ const ProjectMember: React.FC = () => {
     const [rowsPerPage, setRowsPerPage] = useState(5);  // for pagination
     const [searchQuery, setSearchQuery] = useState(''); // for search
     const [totalRows, setTotalRows] = useState(0);  // total rows for pagination
-
+    const { showWarningDialog, DialogComponent } = useWarningDialog();
+    const [openEditDialog, setOpenEditDialog] = useState(false);
+    const [selectedEmployee, setSelectedEmployee] = useState<any>(null);
+    
     const handleOpenAddDialog = () => {
         setOpenAddDialog(true);
     };
@@ -60,7 +65,7 @@ const ProjectMember: React.FC = () => {
         setLoading(true);
         setError(null);
         try {
-            const data = await getProjectEmployees(Number(id), page + 1, rowsPerPage, searchQuery);
+            const data = await getProjectEmployees(Number(id), page + 1, rowsPerPage, searchQuery, showWarningDialog);
             setEmployees(data.data);
             setTotalRows(data.total);  // total rows
         } catch (err) {
@@ -91,88 +96,124 @@ const ProjectMember: React.FC = () => {
         setPage(0); // Reset to first page after search
     };
 
+    const handleOpenEditDialog = (employee: any) => {
+        setSelectedEmployee(employee);
+        setOpenEditDialog(true);
+    };
+
+    const handleCloseEditDialog = (shouldFetch: boolean = false) => {
+        setOpenEditDialog(false);
+        setSelectedEmployee(null);
+        if (shouldFetch) {
+            fetchEmployees();
+        }
+    };
+
+    const handleSaveEdit = async (updatedEmployee: any) => {
+        try {
+            await patchProjectEmployee(
+                showWarningDialog,
+                Number(id),
+                updatedEmployee.ProjectMember_Id,
+                {
+                    Emp_Id: updatedEmployee.Emp_Id,
+                    Role_Id: updatedEmployee.Role_Id,
+                    Degesination: updatedEmployee.Degesination
+                }
+            );
+            handleCloseEditDialog(true);
+        } catch (error) {
+            console.error('Failed to update employee:', error);
+        }
+    };
     return (
         <DataRenderLayoutAdmin>
 
-        <Box sx={{ width: 'auto', overflow: 'auto', paddingLeft: 2, paddingRight: 2 }}>
-            <Grid container spacing={2}>
-                <Grid item xs={12} padding={2} sx={{ marginTop: '1.4em' }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <Grid>
-                            <SearchField
-                                value={searchQuery}
-                                onChange={handleSearch}
-                                placeholder="Search by Employee Name"
-                                size='small'
+            <Box sx={{ width: 'auto', overflow: 'auto', paddingLeft: 2, paddingRight: 2 }}>
+                <Grid container spacing={2}>
+                    <Grid item xs={12} padding={2} sx={{ marginTop: '1.4em' }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                            <Grid>
+                                <SearchField
+                                    value={searchQuery}
+                                    onChange={handleSearch}
+                                    placeholder="Search by Employee Name"
+                                    size='small'
 
+                                />
+                            </Grid>
+                            <Grid>
+                                <Button variant="contained" color="primary" onClick={handleOpenAddDialog}  >
+                                    Add New Member
+                                </Button>
+                            </Grid>
+                            <AddMemberDialog
+                                open={openAddDialog}
+                                onClose={(shouldFetch) => handleCloseAddDialog(shouldFetch)}
+                                fetchEmployees={fetchEmployees} // Pass the actual function
                             />
-                        </Grid>
-                        <Grid>
-                            <Button variant="contained" color="primary" onClick={handleOpenAddDialog}  >
-                                Add New Member
-                            </Button>
-                        </Grid>
-                        <AddMemberDialog
-                            open={openAddDialog}
-                            onClose={(shouldFetch) => handleCloseAddDialog(shouldFetch)}
-                            fetchEmployees={fetchEmployees} // Pass the actual function
-                        />
-                    </Box>
+                        </Box>
+                    </Grid>
                 </Grid>
-            </Grid>
 
-            <TableContainer component={Paper}>
-                <Table sx={{ minWidth: 700 }} aria-label="customized table">
-                    <TableHead>
-                        <TableRow>
-                            <StyledTableCell>S.No</StyledTableCell>
-                            <StyledTableCell align="center">Emp Id</StyledTableCell>
-                            <StyledTableCell align="center">Project Name</StyledTableCell>
-                            <StyledTableCell align="center">Employee Name</StyledTableCell>
-                            <StyledTableCell align="center">Role</StyledTableCell>
-                            <StyledTableCell align="center">Designation</StyledTableCell>
-                            <StyledTableCell align="center">Actions</StyledTableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {employees?.map((employee, index) => (
-                            <StyledTableRow key={employee.Emp_Id}>
-                                <StyledTableCell component="th" scope="row">
-                                    {page * rowsPerPage + index + 1}
-                                </StyledTableCell>
-                                <StyledTableCell align="center">{employee.Emp_Id}</StyledTableCell>
-                                <StyledTableCell align="center">{employee.Project_Name}</StyledTableCell>
-                                <StyledTableCell align="center">{employee.Employee_name}</StyledTableCell>
-                                <StyledTableCell align="center">{employee.Role_Name}</StyledTableCell>
-                                <StyledTableCell align="center">{employee.Degesination}</StyledTableCell>
-                                <StyledTableCell align="center">
-                                    <Tooltip title="Edit" placement="top">
-                                        <IconButton>
-                                            <MdEdit color='blue' />
-                                        </IconButton>
-                                    </Tooltip>
-                                    <Tooltip title="Delete" placement="top">
-                                        <IconButton>
-                                            <MdDelete color='red' />
-                                        </IconButton>
-                                    </Tooltip>
-                                </StyledTableCell>
-                            </StyledTableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
+                <TableContainer component={Paper}>
+                    <Table sx={{ minWidth: 700 }} aria-label="customized table">
+                        <TableHead>
+                            <TableRow>
+                                <StyledTableCell>S.No</StyledTableCell>
+                                <StyledTableCell align="center">Emp Id</StyledTableCell>
+                                <StyledTableCell align="center">Project Name</StyledTableCell>
+                                <StyledTableCell align="center">Employee Name</StyledTableCell>
+                                <StyledTableCell align="center">Role</StyledTableCell>
+                                <StyledTableCell align="center">Designation</StyledTableCell>
+                                <StyledTableCell align="center">Actions</StyledTableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {employees?.map((employee, index) => (
+                                <StyledTableRow key={employee.Emp_Id}>
+                                    <StyledTableCell component="th" scope="row">
+                                        {page * rowsPerPage + index + 1}
+                                    </StyledTableCell>
+                                    <StyledTableCell align="center">{employee.Emp_Id}</StyledTableCell>
+                                    <StyledTableCell align="center">{employee.Project_Name}</StyledTableCell>
+                                    <StyledTableCell align="center">{employee.Employee_name}</StyledTableCell>
+                                    <StyledTableCell align="center">{employee.Role_Name}</StyledTableCell>
+                                    <StyledTableCell align="center">{employee.Degesination}</StyledTableCell>
+                                    <StyledTableCell align="center">
+                                        <Tooltip title="Edit" placement="top">
+                                            <IconButton onClick={() => handleOpenEditDialog(employee)}>
+                                                <MdEdit color='blue' />
+                                            </IconButton>
+                                        </Tooltip>
+                                        <Tooltip title="Delete" placement="top">
+                                            <IconButton>
+                                                <MdDelete color='red' />
+                                            </IconButton>
+                                        </Tooltip>
+                                    </StyledTableCell>
+                                </StyledTableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
 
-            <TablePagination
-                component="div"
-                count={totalRows}
-                page={page}
-                onPageChange={handleChangePage}
-                rowsPerPage={rowsPerPage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
-            />
-
-        </Box>
+                <TablePagination
+                    component="div"
+                    count={totalRows}
+                    page={page}
+                    onPageChange={handleChangePage}
+                    rowsPerPage={rowsPerPage}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
+                />
+                {DialogComponent}
+                <EditMemberDialog
+                    open={openEditDialog}
+                    onClose={handleCloseEditDialog}
+                    employee={selectedEmployee}
+                    onSave={handleSaveEdit}
+                />
+            </Box>
         </DataRenderLayoutAdmin>
 
     );
