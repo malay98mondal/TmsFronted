@@ -211,7 +211,6 @@ const ProjectMember: React.FC = () => {
                     open={openEditDialog}
                     onClose={handleCloseEditDialog}
                     employee={selectedEmployee}
-                    onSave={handleSaveEdit}
                 />
             </Box>
         </DataRenderLayoutAdmin>

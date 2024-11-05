@@ -167,7 +167,7 @@ export const patchProjectEmployee = async (
   try {
     const token = Cookies.get(managerCookies);
 
-    const response = await axios.put(
+    const response = await axios.patch(
       `${API_URL}/ProjectEmployee/${projectId}/${projectMemberId}`,
       data,
       {
