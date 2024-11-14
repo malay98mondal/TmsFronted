@@ -131,9 +131,9 @@ const validationSchema = Yup.object({
 function EditTaskForm({ open, onClose, task, fetchTasks, projectId }: EditTaskFormProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [employees, setEmployees] = useState<Employee[]>([]);
 
   useEffect(() => {
-    // Reset error on dialog open/close
     setError('');
   }, [open]);
 
@@ -141,9 +141,9 @@ function EditTaskForm({ open, onClose, task, fetchTasks, projectId }: EditTaskFo
     setLoading(true);
     setError('');
     try {
-      await updateTaskTeamLead(values.Task_details_Id, values); // Call the update API
-      fetchTasks(); // Refresh tasks after edit
-      onClose(); // Close dialog
+      await updateTaskTeamLead(values.Task_details_Id, values);
+      fetchTasks();
+      onClose();
     } catch (error: any) {
       setError('Error updating task');
       console.error('Error updating task:', error);
@@ -153,22 +153,16 @@ function EditTaskForm({ open, onClose, task, fetchTasks, projectId }: EditTaskFo
   };
 
   function normalizeDate(date) {
-    // Converts date to 'YYYY-MM-DD' format
     const d = new Date(date);
     const month = `0${d.getMonth() + 1}`.slice(-2);
     const day = `0${d.getDate()}`.slice(-2);
     return `${d.getFullYear()}-${month}-${day}`;
   }
-  const [employees, setEmployees] = useState<Employee[]>([]);
-  const [searchTerm, setSearchTerm] = useState(''); // State for search input
-  const [currentPage, setCurrentPage] = useState(0); // State for pagination
-  const [page, setPage] = useState(0); // For pagination
-
 
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
-        const data = await getProjectEmployees(projectId, searchTerm, 10, page); // Fetch based on search and page
+        const data = await getProjectEmployees(projectId);
         setEmployees(data);
       } catch (err) {
         setError('Failed to fetch project employees.');
@@ -179,12 +173,8 @@ function EditTaskForm({ open, onClose, task, fetchTasks, projectId }: EditTaskFo
     if (open) {
       fetchEmployees();
     }
-  }, [open, projectId, searchTerm, currentPage]);
+  }, [open, projectId]);
 
-
-  function setFieldValue(arg0: string, arg1: string | number) {
-    throw new Error('Function not implemented.');
-  }
   return (
     <Dialog open={open} onClose={onClose}>
       <DialogTitle>Edit Task</DialogTitle>
@@ -194,11 +184,10 @@ function EditTaskForm({ open, onClose, task, fetchTasks, projectId }: EditTaskFo
           enableReinitialize
           validationSchema={validationSchema}
           onSubmit={handleSubmit}
-          validateOnChange={true} // Enable validation on change
+          validateOnChange={true}
           validateOnBlur={true}
-
         >
-          {({ values, handleChange, handleSubmit, handleBlur, touched, errors }) => (
+          {({ values, handleChange, handleSubmit, handleBlur, touched, errors, setFieldValue }) => (
             <Form>
               {error && <p style={{ color: 'red' }}>{error}</p>}
               <TextField
@@ -209,10 +198,8 @@ function EditTaskForm({ open, onClose, task, fetchTasks, projectId }: EditTaskFo
                 onChange={handleChange}
                 margin="dense"
                 onBlur={handleBlur}
-
                 error={touched.Task_Details && Boolean(errors.Task_Details)}
-                helperText={touched.Task_Details && typeof errors.Task_Details === 'string' ? errors.Task_Details : undefined}
-              />
+                helperText={touched.Task_Details && typeof errors.Task_Details === 'string' ? errors.Task_Details : undefined}              />
 
               <TextField
                 fullWidth
@@ -222,12 +209,10 @@ function EditTaskForm({ open, onClose, task, fetchTasks, projectId }: EditTaskFo
                 value={normalizeDate(values.Start_Date)}
                 onChange={handleChange}
                 onBlur={handleBlur}
-
                 margin="dense"
                 InputLabelProps={{ shrink: true }}
                 error={touched.Start_Date && Boolean(errors.Start_Date)}
-                helperText={touched.Start_Date && typeof errors.Start_Date === 'string' ? errors.Start_Date : undefined}
-              />
+                helperText={touched.Start_Date && typeof errors.Start_Date === 'string' ? errors.Start_Date : undefined}                       />
               <TextField
                 fullWidth
                 label="End Date"
@@ -235,76 +220,50 @@ function EditTaskForm({ open, onClose, task, fetchTasks, projectId }: EditTaskFo
                 name="End_Date"
                 value={normalizeDate(values.End_Date)}
                 onChange={handleChange}
-                margin="dense"
                 onBlur={handleBlur}
+                margin="dense"
                 InputLabelProps={{ shrink: true }}
                 error={touched.End_Date && Boolean(errors.End_Date)}
-                helperText={touched.End_Date && typeof errors.End_Date === 'string' ? errors.End_Date : undefined}
-              />
+                helperText={touched.End_Date && typeof errors.End_Date === 'string' ? errors.End_Date : undefined}              />
               <TextField
                 fullWidth
                 label="Start Time"
                 type="time"
-                onBlur={handleBlur}
-
                 name="Start_Time"
                 value={values.Start_Time}
                 onChange={handleChange}
+                onBlur={handleBlur}
                 margin="dense"
                 InputLabelProps={{ shrink: true }}
                 error={touched.Start_Time && Boolean(errors.Start_Time)}
-                helperText={touched.Start_Time && typeof errors.Start_Time === 'string' ? errors.Start_Time : undefined}
-              />
+                helperText={touched.Start_Time && typeof errors.Start_Time === 'string' ? errors.Start_Time : undefined}              />
               <TextField
                 fullWidth
                 label="End Time"
                 type="time"
                 name="End_Time"
-                onBlur={handleBlur}
-
                 value={values.End_Time}
                 onChange={handleChange}
+                onBlur={handleBlur}
                 margin="dense"
                 InputLabelProps={{ shrink: true }}
                 error={touched.End_Time && Boolean(errors.End_Time)}
-                helperText={touched.End_Time && typeof errors.End_Time === 'string' ? errors.End_Time : undefined}
-              />
-
+                helperText={touched.End_Time && typeof errors.End_Time === 'string' ? errors.End_Time : undefined}              />
 
               <FormControl fullWidth margin="dense" error={touched.Assigned_Emp_Id && Boolean(errors.Assigned_Emp_Id)}>
-                <Autocomplete
-                  options={employees}
-                  getOptionLabel={(option) => option.Employee.Employee_name}
-                  onChange={(event, newValue) => {
-                    setFieldValue('Assigned_Emp_Id', newValue ? newValue.Emp_Id : '');
-                  }}
-                  onInputChange={(event, value) => {
-                    setSearchTerm(value);
-                    setPage(0);
-                    setEmployees([]); // Clear previous results on new search
-                  }}
-                  onScroll={(event) => {
-                    const target = event.target as HTMLElement;
-                    const bottom = target.scrollHeight === target.scrollTop + target.clientHeight;
-                    if (bottom && !loading) {
-                      setPage((prev) => prev + 1); // Load more when scrolled to bottom
-                    }
-                  }}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      label="Assigned Employee"
-                      variant="outlined"
-                      error={touched.Assigned_Emp_Id && Boolean(errors.Assigned_Emp_Id)}
-                    />
-                  )}
-                  loading={loading}
-                  filterOptions={(options, { inputValue }) => {
-                    return options.filter((option) =>
-                      option.Employee.Employee_name.toLowerCase().includes(inputValue.toLowerCase())
-                    );
-                  }}
-                />
+                <InputLabel>Assigned Employee</InputLabel>
+                <Select
+                  value={values.Assigned_Emp_Id || ''}
+                  onChange={(event) => setFieldValue('Assigned_Emp_Id', event.target.value)}
+                  label="Assigned Employee"
+                  variant="outlined"
+                >
+                  {employees.map((emp) => (
+                    <MenuItem key={emp.Emp_Id} value={emp.Emp_Id}>
+                      {emp.Employee.Employee_name}
+                    </MenuItem>
+                  ))}
+                </Select>
                 <FormHelperText>
                   {touched.Assigned_Emp_Id && errors.Assigned_Emp_Id ? (
                     typeof errors.Assigned_Emp_Id === 'string' ? (
@@ -313,20 +272,13 @@ function EditTaskForm({ open, onClose, task, fetchTasks, projectId }: EditTaskFo
                       <span>{errors.Assigned_Emp_Id.join(', ')}</span>
                     ) : null
                   ) : null}
-                </FormHelperText>
-              </FormControl>
-
+                </FormHelperText>              </FormControl>
 
               <DialogActions>
                 <Button onClick={onClose} disabled={loading}>
                   Cancel
                 </Button>
-                <Button
-                  type="submit"
-                  variant="contained"
-                  color="primary"
-                  disabled={loading}
-                >
+                <Button type="submit" variant="contained" color="primary" disabled={loading}>
                   {loading ? 'Saving...' : 'Save'}
                 </Button>
               </DialogActions>

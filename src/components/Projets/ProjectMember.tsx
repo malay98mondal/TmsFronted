@@ -5,6 +5,11 @@ import {
     styled, tableCellClasses,
     InputAdornment,
     Icon,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle,
 } from '@mui/material';
 import { MdEdit, MdDelete } from "react-icons/md";
 import { useParams } from 'react-router-dom';
@@ -14,6 +19,7 @@ import AddMemberDialog from './AddMemberDialog';
 import DataRenderLayoutAdmin from '../../layouts/dataRenderLayoutAdmin';
 import { useWarningDialog } from '../../middleware/dialogService';
 import EditMemberDialog from './EditMemberDialog';
+import { deleteProjectEmployee } from '../../apiRequest/ProjectEmployeDelete/ProjectEmployeeDelete';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -49,7 +55,9 @@ const ProjectMember: React.FC = () => {
     const { showWarningDialog, DialogComponent } = useWarningDialog();
     const [openEditDialog, setOpenEditDialog] = useState(false);
     const [selectedEmployee, setSelectedEmployee] = useState<any>(null);
-    
+    const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+    const [employeeToDelete, setEmployeeToDelete] = useState<any>(null);
+
     const handleOpenAddDialog = () => {
         setOpenAddDialog(true);
     };
@@ -126,6 +134,29 @@ const ProjectMember: React.FC = () => {
             console.error('Failed to update employee:', error);
         }
     };
+
+
+    const handleOpenDeleteDialog = (employee: any) => {
+        setEmployeeToDelete(employee);
+        setOpenDeleteDialog(true);
+    };
+
+    const handleCloseDeleteDialog = () => {
+        setEmployeeToDelete(null);
+        setOpenDeleteDialog(false);
+    };
+
+    const handleDeleteEmployee = async () => {
+        if (employeeToDelete) {
+            try {
+                await deleteProjectEmployee(showWarningDialog,employeeToDelete.Project_Id,employeeToDelete.Emp_Id);
+                handleCloseDeleteDialog();
+                fetchEmployees();
+            } catch (error) {
+                console.error('Failed to delete employee:', error);
+            }
+        }
+    };
     return (
         <DataRenderLayoutAdmin>
 
@@ -187,7 +218,7 @@ const ProjectMember: React.FC = () => {
                                             </IconButton>
                                         </Tooltip>
                                         <Tooltip title="Delete" placement="top">
-                                            <IconButton>
+                                        <IconButton onClick={() => handleOpenDeleteDialog(employee)}>
                                                 <MdDelete color='red' />
                                             </IconButton>
                                         </Tooltip>
@@ -212,6 +243,26 @@ const ProjectMember: React.FC = () => {
                     onClose={handleCloseEditDialog}
                     employee={selectedEmployee}
                 />
+
+                <Dialog
+                    open={openDeleteDialog}
+                    onClose={handleCloseDeleteDialog}
+                >
+                    <DialogTitle>Confirm Deletion</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText>
+                            Are you sure you want to delete this employee?
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleCloseDeleteDialog} color="primary">
+                            Cancel
+                        </Button>
+                        <Button onClick={handleDeleteEmployee} color="secondary" autoFocus>
+                            Delete
+                        </Button>
+                    </DialogActions>
+                </Dialog>
             </Box>
         </DataRenderLayoutAdmin>
 

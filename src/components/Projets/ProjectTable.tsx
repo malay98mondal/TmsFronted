@@ -7,23 +7,24 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { Box, Button, CssBaseline, IconButton, Toolbar, Tooltip, TextField, Pagination, Typography } from '@mui/material';
+import { Box, Button, CssBaseline, IconButton, Toolbar, Tooltip, TextField, Pagination, Typography, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@mui/material';
 import { MdDelete, MdEdit } from 'react-icons/md';
 import { Link } from 'react-router-dom';
 import AddProjectForm from './AddProjectForm';
 import { fetchProjects, addProject } from '../../apiRequest/ProjectRoutes/ProjectRoutes';
 import DataRenderLayoutAdmin from '../../layouts/dataRenderLayoutAdmin';
 import { useWarningDialog } from '../../middleware/dialogService';
+import { deleteProject } from '../../apiRequest/ProjectEmployeDelete/ProjectEmployeeDelete';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
-      backgroundColor: '#f26729',
-      color: 'white',
-      padding: '1em 8px', // Adjust the padding as needed
+    backgroundColor: '#f26729',
+    color: 'white',
+    padding: '1em 8px', // Adjust the padding as needed
   },
   [`&.${tableCellClasses.body}`]: {
-      fontSize: 12, // Reduce the font size
-      padding: '6px 8px', // Adjust the padding as needed
+    fontSize: 12, // Reduce the font size
+    padding: '6px 8px', // Adjust the padding as needed
   },
 }));
 
@@ -46,11 +47,15 @@ function ProjectTable() {
   const [pageSize, setPageSize] = useState(5);
   const [totalPages, setTotalPages] = useState(1);
   const { showWarningDialog, DialogComponent } = useWarningDialog();
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [projectToDelete, setProjectToDelete] = useState<any>(null);
+
+
 
   const getProjects = async (page = 1, search = '') => {
     setLoading(true);
     try {
-      const data = await fetchProjects(showWarningDialog,page, pageSize, search);
+      const data = await fetchProjects(showWarningDialog, page, pageSize, search);
       if (data.success) {
         setProjects(data.data);
         setTotalPages(data.pagination.totalPages);
@@ -75,7 +80,7 @@ function ProjectTable() {
         Status: values.Status,
       };
 
-      const newProject = await addProject(showWarningDialog,projectData);
+      const newProject = await addProject(showWarningDialog, projectData);
       getProjects(currentPage, searchTerm); // Fetch projects again after adding new project
     } catch (error) {
       console.error("Error adding project:", error);
@@ -94,7 +99,30 @@ function ProjectTable() {
   };
   const normalizeDate = (date: any) => {
     return date ? new Date(date).toISOString().split('T')[0] : '';
-};
+  };
+
+
+  const handleOpenDeleteDialog = (employee: any) => {
+    setProjectToDelete(employee);
+    setOpenDeleteDialog(true);
+  };
+
+  const handleCloseDeleteDialog = () => {
+    setProjectToDelete(null);
+    setOpenDeleteDialog(false);
+  };
+
+  const handleDeleteEmployee = async () => {
+    if (projectToDelete) {
+      try {
+        await deleteProject(showWarningDialog, projectToDelete.Project_Id);
+        handleCloseDeleteDialog();
+        getProjects();
+      } catch (error) {
+        console.error('Failed to delete employee:', error);
+      }
+    }
+  };
 
 
   return (
@@ -156,8 +184,8 @@ function ProjectTable() {
                         </Tooltip>
 
                         <Tooltip title="Delete" placement="top">
-                          <IconButton>
-                            <MdDelete color="red" />
+                          <IconButton onClick={() => handleOpenDeleteDialog(project)}>
+                            <MdDelete color='red' />
                           </IconButton>
                         </Tooltip>
                       </StyledTableCell>
@@ -193,10 +221,29 @@ function ProjectTable() {
               </Button>
             </Typography>
           </Box>
+          <Dialog
+                    open={openDeleteDialog}
+                    onClose={handleCloseDeleteDialog}
+                >
+                    <DialogTitle>Confirm Deletion</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText>
+                            Are you sure you want to delete this Project?
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleCloseDeleteDialog} color="primary">
+                            Cancel
+                        </Button>
+                        <Button onClick={handleDeleteEmployee} color="secondary" autoFocus>
+                            Delete
+                        </Button>
+                    </DialogActions>
+                </Dialog>
 
         </Box>
       </Box>
-      {DialogComponent} 
+      {DialogComponent}
 
     </DataRenderLayoutAdmin>
   );

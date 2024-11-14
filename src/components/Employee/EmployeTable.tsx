@@ -19,25 +19,27 @@ import {
   TableHead,
   TableRow,
   Typography,
+  DialogContentText,
 } from '@mui/material';
 import { MdDelete, MdEdit } from 'react-icons/md';
-import {  addEmployee, getEmployees1 } from '../../apiRequest/ProjectRoutes/ProjectRoutes';
+import { addEmployee, getEmployees1 } from '../../apiRequest/ProjectRoutes/ProjectRoutes';
 import DataRenderLayoutAdmin from '../../layouts/dataRenderLayoutAdmin';
 import { styled } from '@mui/material/styles';
 import { tableCellClasses } from '@mui/material/TableCell';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useWarningDialog } from '../../middleware/dialogService';
+import { deleteEmployee } from '../../apiRequest/ProjectEmployeDelete/ProjectEmployeeDelete';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
-      backgroundColor: '#f26729',
-      color: 'white',
-      padding: '1em 8px', // Adjust the padding as needed
+    backgroundColor: '#f26729',
+    color: 'white',
+    padding: '1em 8px', // Adjust the padding as needed
   },
   [`&.${tableCellClasses.body}`]: {
-      fontSize: 12, // Reduce the font size
-      padding: '8px 8px', // Adjust the padding as needed
+    fontSize: 12, // Reduce the font size
+    padding: '8px 8px', // Adjust the padding as needed
   },
 }));
 
@@ -58,12 +60,15 @@ function EmployeeTable() {
   const [totalPages, setTotalPages] = useState(1);
   const [totalEmployees, setTotalEmployees] = useState(0);
   const [search, setSearch] = useState('');
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [employeeToDelete, setEmployeeToDelete] = useState<any>(null);
+
   const pageSize = 5; // Define page size
   const { showWarningDialog, DialogComponent } = useWarningDialog();
 
   const getProjects = async () => {
     try {
-      const data = await getEmployees1(showWarningDialog,currentPage, pageSize, search);
+      const data = await getEmployees1(showWarningDialog, currentPage, pageSize, search);
       setEmployees(data.data);
       setTotalPages(data.totalPages);
       setTotalEmployees(data.total);
@@ -97,7 +102,7 @@ function EmployeeTable() {
           password: values.password,
         };
 
-        await addEmployee(showWarningDialog,employeeData);
+        await addEmployee(showWarningDialog, employeeData);
         getProjects();
         setOpenDialog(false);
         formik.resetForm();
@@ -130,7 +135,30 @@ function EmployeeTable() {
   };
   const normalizeDate = (date: any) => {
     return date ? new Date(date).toISOString().split('T')[0] : '';
-};
+  };
+
+
+  const handleOpenDeleteDialog = (employee: any) => {
+    setEmployeeToDelete(employee);
+    setOpenDeleteDialog(true);
+  };
+
+  const handleCloseDeleteDialog = () => {
+    setEmployeeToDelete(null);
+    setOpenDeleteDialog(false);
+  };
+
+  const handleDeleteEmployee = async () => {
+    if (employeeToDelete) {
+      try {
+        await deleteEmployee(showWarningDialog, employeeToDelete.Emp_Id);
+        handleCloseDeleteDialog();
+        getProjects();
+      } catch (error) {
+        console.error('Failed to delete employee:', error);
+      }
+    }
+  };
 
   return (
     <DataRenderLayoutAdmin>
@@ -226,7 +254,7 @@ function EmployeeTable() {
           <Toolbar />
 
           {/* Display total employees and pagination information */}
-         
+
 
           <TableContainer component={Paper}>
             <Table sx={{ minWidth: 700 }} aria-label="customized table">
@@ -257,8 +285,8 @@ function EmployeeTable() {
                         </IconButton>
                       </Tooltip>
                       <Tooltip title="Delete">
-                        <IconButton>
-                          <MdDelete />
+                        <IconButton onClick={() => handleOpenDeleteDialog(employee)}>
+                          <MdDelete color='red' />
                         </IconButton>
                       </Tooltip>
                     </StyledTableCell>
@@ -284,9 +312,28 @@ function EmployeeTable() {
             </Typography>
           </Box>
         </Box>
+        <Dialog
+          open={openDeleteDialog}
+          onClose={handleCloseDeleteDialog}
+        >
+          <DialogTitle>Confirm Deletion</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Are you sure you want to delete this employee?
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseDeleteDialog} color="primary">
+              Cancel
+            </Button>
+            <Button onClick={handleDeleteEmployee} color="secondary" autoFocus>
+              Delete
+            </Button>
+          </DialogActions>
+        </Dialog>
       </Box>
-      {DialogComponent} 
-    </DataRenderLayoutAdmin>
+      {DialogComponent}
+    </DataRenderLayoutAdmin >
   );
 }
 
