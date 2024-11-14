@@ -57,12 +57,12 @@ const AddMemberForm = (props: any) => {
                 // General error handling based on the error object
                 if (error.status === 409) {
                     // Check for specific conflict messages
-                    if (error.data && error.data.message) {
-                        const message = error.data.message;
+                     if (error.data && error.data.message) {
+                         const message = error.data.message;
 
-                        if (message.includes('A team lead for the designation')) {
-                            formik.setFieldError('Role_Id', message); // Set error on Role_Id for this specific case
-                        } else if (message.includes('Employee is already assigned to this project.')) {
+                        if  (message.includes('A team lead for the designation')) {
+                             formik.setFieldError('Role_Id', message); // Set error on Role_Id for this specific case
+                         }  else if (message.includes('Employee is already assigned to this project.')) {
                             formik.setFieldError('Emp_Id', message); // Set error on Emp_Id for this specific case
                         } else {
                             // Handle other conflict messages generically
