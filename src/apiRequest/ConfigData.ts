@@ -1,6 +1,6 @@
-const env: any = "dev";
+const env: any = "prod";
 
-export const API_URL = env === "dev" ? "http://localhost:5000/api/v1" : "https://subhani.manikanta.info/api/v1";
+export const API_URL = env === "dev" ? "http://localhost:5000/api/v1" : "http://backend-rho-dusky-70.vercel.app/";
 
 export const managerCookies = "faf61ac9d4fdb0000025bdf7375e4fc90200123"
 
