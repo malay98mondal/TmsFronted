@@ -1,6 +1,6 @@
 import axios from 'axios';
 import Cookies from 'js-cookie';
-import { API_URL, managerCookies, memberCookiers, teamLeadCookies } from '../ConfigData';
+import { API_URL,  memberCookiers, teamLeadCookies } from '../ConfigData';
 
 
 
