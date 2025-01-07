@@ -1,0 +1,39 @@
+{
+    "version": 2,
+    "builds": [
+      {
+        "src": "package.json",
+        "use": "@vercel/static-build",
+        "config": {
+          "distDir": "build"
+        }
+      }
+    ],
+    "routes": [
+      {
+        "src": "/static/(.*)",
+        "dest": "/static/$1"
+      },
+      {
+        "src": "/projects(.*)",
+        "dest": "/index.html"
+      },
+      {
+        "src": "/org-dashboard(.*)",
+        "dest": "/index.html"
+      },
+      {
+        "src": "/employee-task(.*)",
+        "dest": "/index.html"
+      },
+      {
+        "src": "/login",
+        "dest": "/index.html"
+      },
+      {
+        "src": "/(.*)",
+        "dest": "/index.html"
+      }
+    ]
+  }
+  
