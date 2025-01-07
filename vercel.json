@@ -11,12 +11,12 @@
     ],
     "routes": [
       {
-        "src": "/static/(.*)",
-        "dest": "/static/$1"
+        "src": "/",
+        "dest": "/"
       },
       {
-        "src": "/projects(.*)",
-        "dest": "/index.html"
+        "src": "/",
+        "dest": "login"
       },
       {
         "src": "/org-dashboard(.*)",
